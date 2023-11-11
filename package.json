@@ -1,0 +1,22 @@
+{
+  "name": "dupedefend",
+  "version": "0.1.0",
+  "repository": "https://github.com/vietndt/dupedefend.git",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "yarn workspace frontend start",
+    "build": "yarn workspace frontend build"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "frontend"
+    ],
+    "nohoist": [
+      "**/frontend"
+    ]
+  },
+  "dependencies": {
+  }
+}

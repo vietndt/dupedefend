@@ -6,12 +6,15 @@
   "private": true,
   "scripts": {
     "start": "yarn workspace frontend start",
-    "build": "yarn workspace frontend build"
+    "build": "yarn workspace frontend build",
+    "build-be": "yarn workspace backend build",
+    "start-be": "yarn workspace backend start"
   },
   "workspaces": {
     "packages": [
       "packages/*",
-      "frontend"
+      "frontend",
+      "backend"
     ],
     "nohoist": [
       "**/frontend"

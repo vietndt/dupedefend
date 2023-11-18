@@ -5,6 +5,13 @@ creators to protect their content without having to go through a complicated pro
 
 This was done for the constellation chainlink hackathon
 
+## Installation
+
+Backend
+1. goto backend folder and run ./dl_circuits.sh
+2. run npm start
+
+
 ### Changelog
 - [x] Created a basic UI to get youtube metadata
 - [x] Add a sample template from polygon id (this was renamed to backend - curl https://iden3-circuits-bucket.s3.eu-west-1.amazonaws.com/latest.zip --output latest.zip)

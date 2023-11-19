@@ -126,24 +126,16 @@ async function identityCreation() {
 async function issueCredential() {
   console.log('=============== issue credential ===============');
 
-  let { dataStorage, identityWallet } = await initInMemoryDataStorageAndWallets();
+  let { dataStorage, identityWallet } = await initInMemoryDataStorageAndWallets(); // browser, save the identityWallet in local storage
 
-  const { did: userDID, credential: authBJJCredentialUser } = await createIdentity(identityWallet);
+  const { did: userDID, credential: authBJJCredentialUser } = await createIdentity(identityWallet); // browser, load the identityWallet from local storage
 
   console.log('=============== user did ===============');
   console.log(userDID.string());
 
-  const { did: issuerDID, credential: issuerAuthBJJCredential } = await createIdentity(
-    identityWallet
-  );
 
   const credentialRequest = createKYCAgeCredential(userDID);
-  const credential = await identityWallet.issueCredential(issuerDID, credentialRequest);
-
-  console.log('===============  credential ===============');
-  console.log(JSON.stringify(credential));
-
-  await dataStorage.credential.saveCredential(credential);
+  //here call the smart contract with this user DID + youtube link + user eth address
 }
 
 async function transitState() {

@@ -10,7 +10,7 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.post('/issuecredential', (req, res) => {
+app.post('/requestcredential', (req, res) => {
   const { credential } = req.body;
   
   // Process the credential string here

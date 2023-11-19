@@ -7884,7 +7884,7 @@ expect@^29.0.0:
     jest-message-util "^29.7.0"
     jest-util "^29.7.0"
 
-express@^4.17.3:
+express@^4.17.3, express@^4.18.2:
   version "4.18.2"
   resolved "https://registry.yarnpkg.com/express/-/express-4.18.2.tgz#3fabe08296e930c796c19e3c516979386ba9fd59"
   integrity sha512-5/PsL6iGPdfQ/lKM1UuielYgv3BUoJfz1aUwU9vHZ+J7gyvwdQXFEBIEIaxeGf0GIcreATNyBExtalisDbuMqQ==
@@ -8038,9 +8038,9 @@ ffjavascript@0.2.62, ffjavascript@^0.2.48:
     wasmcurves "0.2.2"
     web-worker "^1.2.0"
 
-"ffjavascript@git+https://github.com/iden3/ffjavascript.git#chore/esm-patch":
+"ffjavascript@https://github.com/iden3/ffjavascript.git#chore/esm-patch":
   version "0.2.61"
-  resolved "git+https://github.com/iden3/ffjavascript.git#c4f4d58ad4c05c69facda838c2a081acfc40079f"
+  resolved "https://github.com/iden3/ffjavascript.git#c4f4d58ad4c05c69facda838c2a081acfc40079f"
   dependencies:
     wasmbuilder "0.0.16"
     wasmcurves "0.2.2"
@@ -12775,9 +12775,9 @@ smart-buffer@^4.2.0:
   resolved "https://registry.yarnpkg.com/smart-buffer/-/smart-buffer-4.2.0.tgz#6e1d71fa4f18c05f7d0ff216dd16a481d0e8d9ae"
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
-"snarkjs@git+https://github.com/iden3/snarkjs.git#chore/esm-patch":
+"snarkjs@https://github.com/iden3/snarkjs.git#chore/esm-patch":
   version "0.7.1"
-  resolved "git+https://github.com/iden3/snarkjs.git#76ec3dba720903f6a60983c5f09eb673a8c019fb"
+  resolved "https://github.com/iden3/snarkjs.git#76ec3dba720903f6a60983c5f09eb673a8c019fb"
   dependencies:
     "@iden3/binfileutils" "0.0.11"
     bfj "^7.0.2"

@@ -584,16 +584,16 @@ async function main(choice: String) {
 
     default:
       // default run all
-      await identityCreation();
-      await issueCredential();
-      await transitState();
-      await generateProofs();
+      // await identityCreation();
+      // await issueCredential();
+      // await transitState();
+      // await generateProofs();
       await handleAuthRequest();
-      await handleAuthRequestWithProfiles();
-      await handleAuthRequestNoIssuerStateTransition();
-      await generateRequestData();
-      await generateProofs(true);
-      await handleAuthRequest(true);
+      // await handleAuthRequestWithProfiles();
+      // await handleAuthRequestNoIssuerStateTransition();
+      // await generateRequestData();
+      //await generateProofs(true);
+      //await handleAuthRequest(true);
   }
 }
 

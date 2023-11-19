@@ -6,3 +6,6 @@
   branch = "release-v0"
   path = "packages/contracts/lib/prb-test"
   url = "https://github.com/PaulRBerg/prb-test"
+[submodule "lib/contracts"]
+	path = lib/contracts
+	url = https://github.com/iden3/contracts

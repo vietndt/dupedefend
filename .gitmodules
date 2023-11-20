@@ -10,3 +10,6 @@
 	path = lib/contracts
 	url = https://github.com/iden3/contracts
 
+[submodule "lib/contracts"]
+	path = lib/contracts
+	url = https://github.com/iden3/contracts

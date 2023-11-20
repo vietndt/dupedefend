@@ -8,8 +8,8 @@
   url = "https://github.com/PaulRBerg/prb-test"
 [submodule "packages/contracts/lib/contracts"]
   branch = "master"
-	path = "packages/contracts/lib/contracts"
-	url = "https://github.com/iden3/contracts"
+	path = packages/contracts/lib/contracts
+	url = https://github.com/iden3/contracts
 [submodule "packages/contracts/lib/solmate"]
 	path = packages/contracts/lib/solmate
 	url = https://github.com/transmissions11/solmate

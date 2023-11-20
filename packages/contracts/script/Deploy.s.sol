@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.8.21 <0.9.0;
+pragma solidity >=0.8.16 <0.9.0;
 
 import { IssuerSimple } from "../src/IssuerSimple.sol";
 

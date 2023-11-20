@@ -1,15 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.16;
 /** taken from  polygon sample contract contracts/examples/NonMerklizedIdentityExample.sol*/
 
-import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import { IState } from "@iden3/contracts/interfaces/IState.sol";
 import { ClaimBuilder } from "@iden3/contracts/lib/ClaimBuilder.sol";
 import { IdentityLib } from "@iden3/contracts/lib/IdentityLib.sol";
 import { IdentityBase } from "@iden3/contracts/lib/IdentityBase.sol";
 import { PrimitiveTypeUtils } from "@iden3/contracts/lib/PrimitiveTypeUtils.sol";
 
-contract IssuerSimple is IdentityBase, OwnableUpgradeable {
+contract IssuerSimple is IdentityBase {
     using IdentityLib for IdentityLib.Data;
 
     // represent the current credential type

@@ -17,6 +17,10 @@ Backend
 1. goto backend folder and run ./dl_circuits.sh
 2. run npm start
 
+Contracts
+cd packages/contracts
+forge install
+forge build
 
 ### Changelog
 - [x] Created a basic UI to get youtube metadata

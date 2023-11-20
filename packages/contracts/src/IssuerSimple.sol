@@ -7,8 +7,9 @@ import { ClaimBuilder } from "@iden3/contracts/lib/ClaimBuilder.sol";
 import { IdentityLib } from "@iden3/contracts/lib/IdentityLib.sol";
 import { IdentityBase } from "@iden3/contracts/lib/IdentityBase.sol";
 import { PrimitiveTypeUtils } from "@iden3/contracts/lib/PrimitiveTypeUtils.sol";
+import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract IssuerSimple is IdentityBase {
+contract IssuerSimple is IdentityBase, OwnableUpgradeable {
     using IdentityLib for IdentityLib.Data;
 
     // represent the current credential type

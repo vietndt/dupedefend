@@ -2,5 +2,5 @@
 forge-std/=lib/forge-std/src/
 @iden3/=lib/contracts/
 solidity-bytes-utils/=lib/solidity-bytes-utils/
-@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
+@chainlink/contracts/=lib/chainlink/contracts/
 @openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/

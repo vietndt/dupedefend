@@ -93,6 +93,8 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
         identity.revokeClaim(_revocationNonce);
         identity.transitState();
     }
+    
+    // we split issueCredential into request credential and post chainlink hook callback, issue the credential
 
     function issueCredential(uint256 _userId, string memory _uuid) public {
         ClaimBuilder.ClaimData memory claimData = ClaimBuilder.ClaimData({

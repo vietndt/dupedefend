@@ -9,20 +9,23 @@
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint --fix --ext .js,.ts src/**",
-    "format": "prettier --write \"*.ts\" "
+    "format": "prettier --write \"*.ts\" ",
+    "test-chainlink": "node test-chainlink/request.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@0xpolygonid/js-sdk": "1.4.1",
     "@0xpolygonid/mongo-storage": "github:0xPolygonID/nodejs-storage-example",
+    "@chainlink/env-enc": "^1.0.5",
+    "@chainlink/functions-toolkit": "^0.2.6",
     "@iden3/js-crypto": "1.0.3",
     "@iden3/js-iden3-core": "1.1.0",
     "@iden3/js-jsonld-merklization": "1.1.2",
     "@iden3/js-jwz": "1.1.2",
     "@iden3/js-merkletree": "1.1.2",
     "dotenv": "^16.3.1",
-    "ethers": "6.8.0",
+    "ethers": "5",
     "express": "^4.18.2",
     "mongodb": "^6.1.0",
     "mongodb-memory-server": "^8.16.0"

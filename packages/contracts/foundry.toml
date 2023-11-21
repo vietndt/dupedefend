@@ -50,5 +50,6 @@
   localhost = "http://localhost:8545"
   mainnet = "https://eth-mainnet.g.alchemy.com/v2/${API_KEY_ALCHEMY}"
   optimism = "https://optimism-mainnet.infura.io/v3/${API_KEY_INFURA}"
-  polygon = "https://polygon-mainnet.infura.io/v3/${API_KEY_INFURA}"
+  polygon = "https://polygon-mainnet.g.alchemy.com/v2/${API_KEY_ALCHEMY}"
+  mumbai = "https://polygon-mumbai.g.alchemy.com/v2/${API_KEY_ALCHEMY}"
   sepolia = "https://sepolia.infura.io/v3/${API_KEY_INFURA}"

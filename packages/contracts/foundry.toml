@@ -1,7 +1,7 @@
 # Full reference https://github.com/foundry-rs/foundry/tree/master/crates/config
 
 [profile.default]
-  auto_detect_solc = false
+  auto_detect_solc = true
   block_timestamp = 1_680_220_800 # March 31, 2023 at 00:00 GMT
   bytecode_hash = "none"
   evm_version = "paris"           # See https://www.evmdiff.com/features?name=PUSH0&kind=opcode
@@ -12,24 +12,26 @@
   optimizer_runs = 10_000
   out = "out"
   script = "script"
-  solc = "0.8.16"
   src = "src"
   test = "test"
+  libraries = ["lib/contracts/contracts/lib/Poseidon.sol:PoseidonUnit2L:0x8710AF1E1fbb7CD000B2fBd85b5597B23B0E22d5",
+  "lib/contracts/contracts/lib/Poseidon.sol:PoseidonUnit3L:0x30dcb60E5D5778D70992705a7Ff51ce2b85dAB5b",
+  "lib/contracts/contracts/lib/Poseidon.sol:PoseidonUnit4L:0xCa98B4CA0F7858dF9b5C11B11e85A6E3269ED5ca",
+  "lib/contracts/contracts/lib/IdentityLib.sol:IdentityLib:0xD679c90A27D09E3A76e99d8e705079F1a281537b",
+  "lib/contracts/contracts/lib/SmtLib.sol:SmtLib:0x095a4304859A3B6beD68CDb1d112690715C29596"]
+
+[profile.functions]
+  solc_version = '0.8.19'
+  src = 'lib/chainlink/contracts/src/v0.8/functions/'
+  gas_price = 3000000000
+  out = 'out'
 
 [profile.ci]
   fuzz = { runs = 10_000 }
   verbosity = 4
 
 [etherscan]
-  arbitrum_one = { key = "${API_KEY_ARBISCAN}" }
-  avalanche = { key = "${API_KEY_SNOWTRACE}" }
-  bnb_smart_chain = { key = "${API_KEY_BSCSCAN}" }
-  gnosis_chain = { key = "${API_KEY_GNOSISSCAN}" }
-  goerli = { key = "${API_KEY_ETHERSCAN}" }
-  mainnet = { key = "${API_KEY_ETHERSCAN}" }
-  optimism = { key = "${API_KEY_OPTIMISTIC_ETHERSCAN}" }
-  polygon = { key = "${API_KEY_POLYGONSCAN}" }
-  sepolia = { key = "${API_KEY_ETHERSCAN}" }
+  mumbai = { key = "${API_KEY_POLYGONSCAN}" }
 
 [fmt]
   bracket_spacing = true
@@ -42,14 +44,4 @@
   wrap_comments = true
 
 [rpc_endpoints]
-  arbitrum_one = "https://arbitrum-mainnet.infura.io/v3/${API_KEY_INFURA}"
-  avalanche = "https://avalanche-mainnet.infura.io/v3/${API_KEY_INFURA}"
-  bnb_smart_chain = "https://bsc-dataseed.binance.org"
-  gnosis_chain = "https://rpc.gnosischain.com"
-  goerli = "https://goerli.infura.io/v3/${API_KEY_INFURA}"
-  localhost = "http://localhost:8545"
-  mainnet = "https://eth-mainnet.g.alchemy.com/v2/${API_KEY_ALCHEMY}"
-  optimism = "https://optimism-mainnet.infura.io/v3/${API_KEY_INFURA}"
-  polygon = "https://polygon-mainnet.g.alchemy.com/v2/${API_KEY_ALCHEMY}"
   mumbai = "https://polygon-mumbai.g.alchemy.com/v2/${API_KEY_ALCHEMY}"
-  sepolia = "https://sepolia.infura.io/v3/${API_KEY_INFURA}"

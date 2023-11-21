@@ -1,3 +1,31 @@
+Deployments  -
+
+Issuer
+0xe27BF9371ba426f994d6d933d44C3Ad4A456be09
+Verifier
+0x9C6d9F8a10Af92EFf70DBF8EdA0dB2929D7f0c06
+
+
+## MISC 
+from github
+{
+ "state": "0x134b1be34911e39a8397ec6289782989729807a4",
+ "smtLib": "0x095a4304859A3B6beD68CDb1d112690715C29596",
+ "identity": "0xD679c90A27D09E3A76e99d8e705079F1a281537b",
+ "poseidon2": "0x8710AF1E1fbb7CD000B2fBd85b5597B23B0E22d5",
+ "poseidon3": "0x30dcb60E5D5778D70992705a7Ff51ce2b85dAB5b",
+ "poseidon4": "0xCa98B4CA0F7858dF9b5C11B11e85A6E3269ED5ca",
+ "network": "mumbai"
+}
+self deployed
+libraries = ["lib/contracts/contracts/lib/Poseidon.sol:PoseidonUnit2L:0x8B1b9ad1039ab18812A2516C7A8531Ac2C663B8b",
+"lib/contracts/contracts/lib/Poseidon.sol:PoseidonUnit3L:0x6f7a9b9EAb67474F52EC9A919b72d0142B49e835",
+"lib/contracts/contracts/lib/Poseidon.sol:PoseidonUnit4L:0x6C21B153a77Dc3296948ba52eEdDEeC7991bbB0a",
+"lib/contracts/contracts/lib/ClaimBuilder.sol:ClaimBuilder:0x7f9740b1E094894f78D09110A7494D6d822751bB",
+"lib/contracts/contracts/lib/IdentityLib.sol:IdentityLib:0x7c70C717d1FFf1731D4DF80407Bd0aC6cd34D025",
+"lib/contracts/contracts/lib/SmtLib.sol:SmtLib:0xEA6cD21FDabeCE042B7E57F2243076cd7F9f53D3"
+
+
 # Foundry Template [![Open in Gitpod][gitpod-badge]][gitpod] [![Github Actions][gha-badge]][gha] [![Foundry][foundry-badge]][foundry] [![License: MIT][license-badge]][license]
 
 [gitpod]: https://gitpod.io/#https://github.com/PaulRBerg/foundry-template

@@ -11,7 +11,7 @@ import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/O
 
 contract IssuerSimple is IdentityBase, OwnableUpgradeable {
     using IdentityLib for IdentityLib.Data;
-
+    uint256[500] private __gap;
     // represent the current credential type
     string private schemaURL;
     uint256 private schemaHash;
@@ -34,7 +34,13 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
 
     // credential storage
     mapping(uint256 => mapping(string => ClaimInfo)) private claimsMap;
+    event Claimed(uint256 _id, address sender);
 
+    function initialize(address _stateContractAddr) public override initializer {
+        super.initialize(_stateContractAddr);
+        __Ownable_init();
+    }
+    
     function setClaim(
         uint256 _id, 
         string memory _uuid,
@@ -66,24 +72,6 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
         credentialType = _credentialType;
     }
 
-    uint256[500] private __gap;
-
-    function initialize(
-        address _stateContractAddr,
-        string calldata _schemaURL, 
-        uint256 _schemaHash,
-        string calldata _schemaJSON,
-        string calldata _credentialType
-    ) public initializer {
-        schemaURL = _schemaURL;
-        schemaHash = _schemaHash;
-        schemaJSON = _schemaJSON;
-        credentialType = _credentialType;
-
-        IdentityBase.initialize(_stateContractAddr);
-        __Ownable_init();
-    }
-
     function addClaimAndTransit(uint256[8] memory _claim) internal {
         identity.addClaim(_claim);
         identity.transitState();
@@ -93,9 +81,8 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
         identity.revokeClaim(_revocationNonce);
         identity.transitState();
     }
-    
-    // we split issueCredential into request credential and post chainlink hook callback, issue the credential
 
+    // we just call this directly from the chainlink fullfillment and see if it works
     function issueCredential(uint256 _userId, string memory _uuid) public {
         ClaimBuilder.ClaimData memory claimData = ClaimBuilder.ClaimData({
              // metadata
@@ -118,6 +105,7 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
         uint256[8] memory claim = ClaimBuilder.build(claimData);
         addClaimAndTransit(claim);
         setClaim(_userId, _uuid, claim);
+        emit Claimed(_userId, msg.sender);
     }
 
     function weiToGwei(uint weiAmount) internal pure returns (uint256) {

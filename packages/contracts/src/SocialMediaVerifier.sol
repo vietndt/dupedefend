@@ -1,25 +1,22 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity >=0.8.16;
 
-import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
+import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/v1_0_0/FunctionsClient.sol";
 import {ConfirmedOwner} from "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol";
-import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol";
+import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/v1_0_0/libraries/FunctionsRequest.sol";
 
-/**
- * THIS IS AN EXAMPLE CONTRACT THAT USES HARDCODED VALUES FOR CLARITY.
- * THIS IS AN EXAMPLE CONTRACT THAT USES UN-AUDITED CODE.
- * DO NOT USE THIS CODE IN PRODUCTION.
- */
-contract FunctionsConsumerExample is FunctionsClient, ConfirmedOwner {
+
+contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
     using FunctionsRequest for FunctionsRequest.Request;
 
     bytes32 public s_lastRequestId;
     bytes public s_lastResponse;
     bytes public s_lastError;
+    address public issuerSimpleAddress;
 
     error UnexpectedRequestID(bytes32 requestId);
 
-    event Response(bytes32 indexed requestId, bytes response, bytes err);
+    event Response(bytes32 indexed requestId, bytes response, bytes err, bool successCallToIssuerSimple);
 
     constructor(
         address router
@@ -105,8 +102,19 @@ contract FunctionsConsumerExample is FunctionsClient, ConfirmedOwner {
         if (s_lastRequestId != requestId) {
             revert UnexpectedRequestID(requestId);
         }
+        // Encode the function call
+        bytes memory encodedData = abi.encodeWithSignature("issueCredential(uint256,string)", 1, "hello");
+        (bool success,) = issuerSimpleAddress.call(encodedData);
         s_lastResponse = response;
         s_lastError = err;
-        emit Response(requestId, s_lastResponse, s_lastError);
+        emit Response(requestId, s_lastResponse, s_lastError, success);
+    }
+
+    function setIssuerSimpleAddress(address _address) external onlyOwner {
+        issuerSimpleAddress = _address;
+    }
+
+    function getIssuerSimpleAddress() external view returns (address) {
+        return issuerSimpleAddress;
     }
 }

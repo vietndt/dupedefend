@@ -7,6 +7,7 @@ const {
   ReturnType,
   decodeResult,
   FulfillmentCode,
+  SecretsManager,
 } = require("@chainlink/functions-toolkit");
 const functionsConsumerAbi = require("./abi/functionsClient.json");
 const ethers = require("ethers");
@@ -23,13 +24,19 @@ const makeRequestMumbai = async () => {
   const linkTokenAddress = "0x326C977E6efc84E512bB9C30f76E30c160eD06FB";
   const donId = "fun-polygon-mumbai-1";
   const explorerUrl = "https://mumbai.polygonscan.com";
-
+  const gatewayUrls = [
+    "https://01.functions-gateway.testnet.chain.link/",
+    "https://02.functions-gateway.testnet.chain.link/",
+  ];
   // Initialize functions settings
   const source = fs
     .readFileSync(path.resolve(__dirname, "source.js"))
     .toString();
 
-  const args = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+    const args = ["1", "USD"];
+    const secrets = { apiKey: '1a9dbce7-db85-4e89-8900-32d7afe1a484' };
+    const slotIdNumber = 0; // slot ID where to upload the secrets
+    const expirationTimeMinutes = 15; // expiration time in minutes of the secrets
   const gasLimit = 300000;
 
   // Initialize ethers signer and provider to interact with the contracts onchain
@@ -51,13 +58,13 @@ const makeRequestMumbai = async () => {
 
   ///////// START SIMULATION ////////////
 
-  console.log("Start simulation...");
+  console.log("Start simulation...", secrets);
 
   const response = await simulateScript({
     source: source,
     args: args,
     bytesArgs: [], // bytesArgs - arguments can be encoded off-chain to bytes.
-    secrets: {}, // no secrets in this example
+    secrets: secrets, // no secrets in this example
   });
 
   console.log("Simulation result", response);
@@ -106,26 +113,57 @@ const makeRequestMumbai = async () => {
 
   //////// MAKE REQUEST ////////
 
-  console.log("\nMake request...");
+  // First encrypt secrets and upload the encrypted secrets to the DON
+  const secretsManager = new SecretsManager({
+    signer: signer,
+    functionsRouterAddress: routerAddress,
+    donId: donId,
+  });
+  await secretsManager.initialize();
+
+  // Encrypt secrets and upload to DON
+  const encryptedSecretsObj = await secretsManager.encryptSecrets(secrets);
+
+
+  console.log(
+    `Upload encrypted secret to gateways ${gatewayUrls}. slotId ${slotIdNumber}. Expiration in minutes: ${expirationTimeMinutes}`
+  );
+  // Upload secrets
+  const uploadResult = await secretsManager.uploadEncryptedSecretsToDON({
+    encryptedSecretsHexstring: encryptedSecretsObj.encryptedSecrets,
+    gatewayUrls: gatewayUrls,
+    slotId: slotIdNumber,
+    minutesUntilExpiration: expirationTimeMinutes,
+  });
+
+  if (!uploadResult.success)
+    throw new Error(`Encrypted secrets not uploaded to ${gatewayUrls}`);
+
+  console.log(
+    `\n✅ Secrets uploaded properly to gateways ${gatewayUrls}! Gateways response: `,
+    uploadResult
+  );
+
+  const donHostedSecretsVersion = parseInt(uploadResult.version); // fetch the reference of the encrypted secrets
 
   const functionsConsumer = new ethers.Contract(
     consumerAddress,
     functionsConsumerAbi,
     signer
   );
-
   // Actual transaction call
   const transaction = await functionsConsumer.sendRequest(
     source, // source
     "0x", // user hosted secrets - encryptedSecretsUrls - empty in this example
-    0, // don hosted secrets - slot ID - empty in this example
-    0, // don hosted secrets - version - empty in this example
+    slotIdNumber, // slot ID of the encrypted secrets
+    donHostedSecretsVersion, // version of the encrypted secrets
     args,
     [], // bytesArgs - arguments can be encoded off-chain to bytes.
     subscriptionId,
     gasLimit,
     ethers.utils.formatBytes32String(donId) // jobId is bytes32 representation of donId
   );
+
 
   // Log transaction details
   console.log(

@@ -1,4 +1,5 @@
 import { Container } from "@mui/material";
+import { HashRouter, Routes, Route } from 'react-router-dom';
 
 import '@rainbow-me/rainbowkit/styles.css';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
@@ -8,6 +9,9 @@ import Associate from "./components/Associate";
 import { WagmiConfig, configureChains, createConfig } from "wagmi";
 import { polygonMumbai } from "viem/chains";
 import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
+import HomePage from "./pages/HomPage";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 const { chains, publicClient } = configureChains(
   [polygonMumbai],
@@ -33,15 +37,27 @@ function App() {
   return (
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider chains={chains}>
-        <Container sx={{
-          alignItems: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          minHeight: '100vh'
-        }} disableGutters maxWidth={false}>
-          <Associate />
-        </Container>
+        <HashRouter>
+          <Container sx={{
+            alignItems: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            minHeight: '100vh',
+            width: '100%'
+          }} disableGutters maxWidth={false}>
+            <Header />
+            <Routes>
+              <Route path="/" element={
+                <HomePage />
+              } />
+              <Route path="/app" element={
+                <Associate />
+              } />
+            </Routes>
+            {/* <Footer /> */}
+          </Container>
+        </HashRouter>
       </RainbowKitProvider>
     </WagmiConfig>
   );

@@ -6,7 +6,6 @@ const Header = () => {
   return (
     <Box sx={{
       alignItems: 'center',
-      // borderBottom: '1px solid #ffffff',
       display: 'flex',
       height: 70,
       justifyContent: 'space-between',
@@ -17,10 +16,10 @@ const Header = () => {
       width: '100%'
     }}>
       <Typography component="h3" sx={{
-        color: '#ffffff',
-        fontSize: 20,
+        color: '#f0f4fa',
+        fontSize: 22,
         fontWeight: 700
-      }}>DUPE DEFEND</Typography>
+      }}></Typography>
       <Button component={Link} to="/app" variant="contained" sx={{
         alignItems: 'center',
         display: 'flex',

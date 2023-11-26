@@ -55,7 +55,7 @@ function App() {
                 <Associate />
               } />
             </Routes>
-            {/* <Footer /> */}
+            <Footer />
           </Container>
         </HashRouter>
       </RainbowKitProvider>

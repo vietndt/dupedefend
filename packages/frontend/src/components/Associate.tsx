@@ -1,6 +1,17 @@
 import { useState } from "react";
 import { Box, FormControl, TextField, Button, Paper, Typography } from "@mui/material";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+// import {
+//   SubscriptionManager,
+//   simulateScript,
+//   ResponseListener,
+//   ReturnType,
+//   decodeResult,
+//   FulfillmentCode,
+//   SecretsManager,
+// } from "@chainlink/functions-toolkit";
+// import envvar from "@chainlink/env-enc";
+// envvar.config();
 
 const Associate = () => {
   const [videoInputControl, setVideoInputControl] = useState<string>('');

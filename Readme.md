@@ -42,5 +42,14 @@ Not able to add credentialAtomicQueryMTPV2OnChain from polygon sample due to lar
 
 
 ### Steps
-1. User requests for a verifiable claim
-2. Backend Issuer Node verifies the claim and issues the 
+User calls below contract via frontend (we hardcode youtube api key for testing)
+1. SocialMediaVerifier.sol -> SendRequest -> SendRequest to chainlink to call youtube api.
+
+We write in Source.js to get the data from youtube description eg. useraddress for a Video
+
+2. chainlink -> SocialMediaVerifier.sol -> fullfillrequest
+// Create a mapping between request id and user address
+// check if the response has address and it matches the user address
+
+3. fullfillrequest -> issueCredential in IssuerSimple.sol (polygon Template for Verifiable credential)
+// Issue a credential to the user

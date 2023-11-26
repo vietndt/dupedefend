@@ -1,20 +1,47 @@
-// calculate geometric mean off-chain by a DON then return the result
-// valures provided in args array
+// This example shows how to make call an API using a secret
+// https://coinmarketcap.com/api/documentation/v1/
 
-console.log(`calculate geometric mean of ${args}`);
+// Arguments can be provided when a request is initated on-chain and used in the request source code as shown below
+const coinMarketCapCoinId = args[0];
+const currencyCode = args[1];
 
-// make sure arguments are provided
-if (!args || args.length === 0) throw new Error("input not provided");
+if (!secrets.apiKey) {
+  throw Error(
+    "COINMARKETCAP_API_KEY environment variable not set for CoinMarketCap API.  Get a free key from https://coinmarketcap.com/api/"
+  );
+}
 
-const product = args.reduce((accumulator, currentValue) => {
-  const numValue = parseInt(currentValue);
-  if (isNaN(numValue)) throw Error(`${currentValue} is not a number`);
-  return accumulator * numValue;
-}, 1); // calculate the product of numbers provided in args array
+// build HTTP request object
 
-const geometricMean = Math.pow(product, 1 / args.length); // geometric mean = length-root of (product)
-console.log(`geometric mean is: ${geometricMean.toFixed(2)}`);
+const coinMarketCapRequest = Functions.makeHttpRequest({
+  url: `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest`,
+  // Get a free API key from https://coinmarketcap.com/api/
+  headers: {
+    "Content-Type": "application/json",
+    "X-CMC_PRO_API_KEY": secrets.apiKey,
+  },
+  params: {
+    convert: currencyCode,
+    id: coinMarketCapCoinId,
+  },
+});
 
-// Decimals are not handled in Solidity so multiply by 100 (for 2 decimals) and round to the nearest integer
-// Functions.encodeUint256: Return a buffer from uint256
-return Functions.encodeUint256(Math.round(geometricMean * 100));
+// Make the HTTP request
+const coinMarketCapResponse = await coinMarketCapRequest;
+
+if (coinMarketCapResponse.error) {
+  throw new Error("CoinMarketCap Error");
+}
+
+// fetch the price
+const price =
+  coinMarketCapResponse.data.data[coinMarketCapCoinId]["quote"][currencyCode][
+    "price"
+  ];
+
+console.log(`Price: ${price.toFixed(2)} ${currencyCode}`);
+
+// price * 100 to move by 2 decimals (Solidity doesn't support decimals)
+// Math.round() to round to the nearest integer
+// Functions.encodeUint256() helper function to encode the result from uint256 to bytes
+return Functions.encodeUint256(Math.round(price * 100));

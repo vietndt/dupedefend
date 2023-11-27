@@ -33,7 +33,7 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
     }
 
     // credential storage
-    mapping(uint256 => mapping(string => ClaimInfo)) private claimsMap;
+    mapping(uint256 => mapping(address => ClaimInfo)) private claimsMap;
     event Claimed(address requestor, uint256 channelID);
 
     function initialize(address _stateContractAddr) public override initializer {
@@ -43,20 +43,19 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
     
     function setClaim(
         address _uuid,
-        uint256 _id, 
-        uint256[8] memory _claimData
+        uint256 _id
     ) internal {
         claimsMap[_id][_uuid] = ClaimInfo({
             schemaURL: schemaURL,
             schemaHash: schemaHash,
             schemaJSON: schemaJSON,
             credentialType: credentialType,
-            claim: _claimData
+            claim: [_id, 0, 0, 0, 0, 0, 0, 0]
         }); 
         claimsMapSize++;
     }
     //TODO:need to change this to be a mapping of address to channel
-    function getUserClaim(uint256 _userId, string memory _uuid) public view returns (ClaimInfo memory) {
+    function getUserClaim(uint256 _userId, address _uuid) public view returns (ClaimInfo memory) {
         return claimsMap[_userId][_uuid];
     }
 
@@ -104,7 +103,7 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
         });
         uint256[8] memory claim = ClaimBuilder.build(claimData);
         addClaimAndTransit(claim);
-        setClaim(requestor, _channelId);
+        setClaim(requestor, _channelId); //1 to denote true
         emit Claimed(requestor, _channelId);
     }
 

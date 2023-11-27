@@ -34,7 +34,7 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
 
     // credential storage
     mapping(uint256 => mapping(string => ClaimInfo)) private claimsMap;
-    event Claimed(uint256 _id, address sender);
+    event Claimed(address requestor, uint256 channelID);
 
     function initialize(address _stateContractAddr) public override initializer {
         super.initialize(_stateContractAddr);
@@ -42,8 +42,8 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
     }
     
     function setClaim(
+        address _uuid,
         uint256 _id, 
-        string memory _uuid,
         uint256[8] memory _claimData
     ) internal {
         claimsMap[_id][_uuid] = ClaimInfo({
@@ -55,7 +55,7 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
         }); 
         claimsMapSize++;
     }
-
+    //TODO:need to change this to be a mapping of address to channel
     function getUserClaim(uint256 _userId, string memory _uuid) public view returns (ClaimInfo memory) {
         return claimsMap[_userId][_uuid];
     }
@@ -83,7 +83,7 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
     }
 
     // we just call this directly from the chainlink fullfillment and see if it works
-    function issueCredential(uint256 _userId, string memory _uuid) public {
+    function issueCredential(uint256 _channelId, address requestor) public {
         ClaimBuilder.ClaimData memory claimData = ClaimBuilder.ClaimData({
              // metadata
             schemaHash: schemaHash,
@@ -92,20 +92,20 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
             updatable: false,
             merklizedRootPosition: 0,
             version: 0,
-            id: _userId,
+            id: convertAddressToUint256(requestor),
             revocationNonce: claimsMapSize,
             expirationDate: 3183110232,
             // data
             merklizedRoot: 0,
             indexDataSlotA: convertAddressToUint256(msg.sender),
-            indexDataSlotB: weiToGwei(msg.sender.balance),
+            indexDataSlotB: _channelId,//later convert this to the users channel id for now just coded to 1
             valueDataSlotA: 0,
             valueDataSlotB: 0
         });
         uint256[8] memory claim = ClaimBuilder.build(claimData);
         addClaimAndTransit(claim);
-        setClaim(_userId, _uuid, claim);
-        emit Claimed(_userId, msg.sender);
+        setClaim(requestor, _channelId);
+        emit Claimed(requestor, _channelId);
     }
 
     function weiToGwei(uint weiAmount) internal pure returns (uint256) {

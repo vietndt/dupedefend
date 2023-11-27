@@ -4,6 +4,7 @@ pragma solidity >=0.8.16;
 import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/v1_0_0/FunctionsClient.sol";
 import {ConfirmedOwner} from "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol";
 import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/v1_0_0/libraries/FunctionsRequest.sol";
+import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 
 
 contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
@@ -13,8 +14,9 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
     bytes public s_lastResponse;
     bytes public s_lastError;
     address public issuerSimpleAddress;
-
-    error UnexpectedRequestID(bytes32 requestId);
+    mapping(bytes32 => address) public requestToUser;
+    
+    error UnexpectedRequestOr(address requestor);
 
     event Response(bytes32 indexed requestId, bytes response, bytes err, bool successCallToIssuerSimple);
 
@@ -61,6 +63,7 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
             gasLimit,
             donID
         );
+        requestToUser[s_lastRequestId] = msg.sender;
         return s_lastRequestId;
     }
 
@@ -99,11 +102,16 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
         bytes memory response,
         bytes memory err
     ) internal override {
-        if (s_lastRequestId != requestId) {
-            revert UnexpectedRequestID(requestId);
+        //get user address from response and check if it maps to the requestor, this is used to verify
+        //that the social media verification was requested by the same person who requested the credential
+        (address requestor, uint256 channelID) = extractAddressAndChannel(response);
+
+        if (requestToUser[requestId] != requestor) {
+            revert UnexpectedRequestOr(requestor);
         }
-        // Encode the function call
-        bytes memory encodedData = abi.encodeWithSignature("issueCredential(uint256,string)", 1, "hello");
+        // Encode the function call, I will create a mapping between request id and user address
+        // check if the response has address and it matches the user address
+        bytes memory encodedData = abi.encodeWithSignature("issueCredential(uint256,address)", channelID, requestor);
         (bool success,) = issuerSimpleAddress.call(encodedData);
         s_lastResponse = response;
         s_lastError = err;
@@ -116,5 +124,18 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
 
     function getIssuerSimpleAddress() external view returns (address) {
         return issuerSimpleAddress;
+    }
+
+    function extractAddressAndChannel(bytes memory response) private pure returns (address addr, uint256 channelID) {
+        require(response.length >= 20, "Response has an invalid length");
+
+        // Extract the address
+        assembly {
+            addr := mload(add(response, 20))
+        }
+
+        // Extract the channel id into uint
+        channelID = BytesLib.toUint256(response, 20);
+        
     }
 }

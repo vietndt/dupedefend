@@ -5,13 +5,13 @@ import '@rainbow-me/rainbowkit/styles.css';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 
-import Associate from "./components/Associate";
 import { WagmiConfig, configureChains, createConfig } from "wagmi";
 import { polygonMumbai } from "viem/chains";
 import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
 import HomePage from "./pages/HomPage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import AppPage from "./pages/AppPage";
 
 const { chains, publicClient } = configureChains(
   [polygonMumbai],
@@ -52,7 +52,7 @@ function App() {
                 <HomePage />
               } />
               <Route path="/app" element={
-                <Associate />
+                <AppPage />
               } />
             </Routes>
             <Footer />

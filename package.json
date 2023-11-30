@@ -11,6 +11,14 @@
     "start-be": "yarn workspace backend start"
   },
   "workspaces": {
+    "packages": [
+      "packages/*",
+      "frontend",
+      "backend"
+    ],
+    "nohoist": [
+      "**/frontend"
+    ]
   },
   "dependencies": {
   }

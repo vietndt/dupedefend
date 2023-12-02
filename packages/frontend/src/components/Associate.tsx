@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Box, FormControl, TextField, Button, Paper, Typography } from "@mui/material";
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { identityCreation } from "../helpers/PolygonId";
+// import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const Associate = () => {
   const [videoInputControl, setVideoInputControl] = useState<string>('');
@@ -39,7 +40,7 @@ const Associate = () => {
       padding: 3,
       width: '100%'
     }}>
-      <ConnectButton />
+      {/* <ConnectButton /> */}
       <Typography component="h3" sx={{
         fontSize: 20,
         fontWeight: 600
@@ -73,6 +74,7 @@ const Associate = () => {
             }
             getVideoDetail(id);
           }}>Associate</Button>
+          <Button onClick={identityCreation}>test</Button>
         </Box>
         {snippet ?
           <Box sx={{

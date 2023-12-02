@@ -48,6 +48,22 @@
     jsonld "8.3.1"
     uuid "9.0.1"
 
+"@0xpolygonid/js-sdk@^1.4.2":
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/@0xpolygonid/js-sdk/-/js-sdk-1.4.2.tgz#0d785c28a523d5985eb2ea6a35aa0ccde8f39f18"
+  integrity sha512-hQHEgSaQe98UcbWV8WHLyP9Xz6xfYAK2SAGH4R09CvtLma6Ox8TilkE44mlQhEcr6LXxdWLKuvK/y0DUIWI3jg==
+  dependencies:
+    ajv "8.12.0"
+    ajv-formats "2.1.1"
+    did-jwt "6.11.6"
+    did-resolver "4.1.0"
+    elliptic "6.5.4"
+    ethers "6.8.0"
+    idb-keyval "6.2.0"
+    js-sha3 "0.9.2"
+    jsonld "8.3.1"
+    uuid "9.0.1"
+
 "@0xpolygonid/mongo-storage@github:0xPolygonID/nodejs-storage-example":
   version "0.0.6"
   resolved "https://codeload.github.com/0xPolygonID/nodejs-storage-example/tar.gz/ca2c6b7aba12132148f1b20b05c5a4bdaf759441"
@@ -2451,10 +2467,6 @@
   dependencies:
     fastfile "0.0.20"
     ffjavascript "^0.2.48"
-
-"@iden3/eslint-config@https://github.com/iden3/eslint-config":
-  version "1.0.0"
-  resolved "https://github.com/iden3/eslint-config#2848a55e4d4fabe196315b4828158856a84292aa"
 
 "@iden3/js-crypto@1.0.2":
   version "1.0.2"
@@ -12428,6 +12440,13 @@ react-app-polyfill@^3.0.0:
     regenerator-runtime "^0.13.9"
     whatwg-fetch "^3.6.2"
 
+react-app-rewired@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/react-app-rewired/-/react-app-rewired-2.2.1.tgz#84901ee1e3f26add0377ebec0b41bcdfce9fc211"
+  integrity sha512-uFQWTErXeLDrMzOJHKp0h8P1z0LV9HzPGsJ6adOtGlA/B9WfT6Shh4j2tLTTGlXOfiVx6w6iWpp7SOC5pvk+gA==
+  dependencies:
+    semver "^5.6.0"
+
 react-dev-utils@^12.0.1:
   version "12.0.1"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-12.0.1.tgz#ba92edb4a1f379bd46ccd6bcd4e7bc398df33e73"
@@ -13089,6 +13108,11 @@ selfsigned@^2.1.1:
   dependencies:
     "@types/node-forge" "^1.3.0"
     node-forge "^1"
+
+semver@^5.6.0:
+  version "5.7.2"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-5.7.2.tgz#48d55db737c3287cd4835e17fa13feace1c41ef8"
+  integrity sha512-cBznnQ9KjJqU67B52RMC65CMarK2600WFnbkcaiwWq3xy/5haFJlshgnpjovMVJ+Hff49d8GEn0b87C5pDQ10g==
 
 semver@^6.0.0, semver@^6.3.0, semver@^6.3.1:
   version "6.3.1"

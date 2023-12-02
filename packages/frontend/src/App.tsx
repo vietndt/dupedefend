@@ -1,42 +1,42 @@
 import { Container } from "@mui/material";
 import { HashRouter, Routes, Route } from 'react-router-dom';
 
-import '@rainbow-me/rainbowkit/styles.css';
-import { alchemyProvider } from 'wagmi/providers/alchemy';
-import { publicProvider } from 'wagmi/providers/public';
+// import { polygonMumbai } from "viem/chains";
+// import { WagmiConfig, configureChains, createConfig } from "wagmi";
+// import { alchemyProvider } from 'wagmi/providers/alchemy';
+// import { publicProvider } from 'wagmi/providers/public';
+// import '@rainbow-me/rainbowkit/styles.css';
+// import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
 
-import { WagmiConfig, configureChains, createConfig } from "wagmi";
-import { polygonMumbai } from "viem/chains";
-import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
 import HomePage from "./pages/HomPage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import AppPage from "./pages/AppPage";
 
-const { chains, publicClient } = configureChains(
-  [polygonMumbai],
-  [
-    alchemyProvider({ apiKey: process.env.ALCHEMY_ID as string }),
-    publicProvider()
-  ]
-);
+// const { chains, publicClient } = configureChains(
+//   [polygonMumbai],
+//   [
+//     alchemyProvider({ apiKey: process.env.ALCHEMY_ID as string }),
+//     publicProvider()
+//   ]
+// );
 
-const { connectors } = getDefaultWallets({
-  appName: 'DupeDefend App',
-  projectId: process.env.REACT_APP_WALLETCONNECT_PROJECT_ID as string,
-  chains
-});
+// const { connectors } = getDefaultWallets({
+//   appName: 'DupeDefend App',
+//   projectId: process.env.REACT_APP_WALLETCONNECT_PROJECT_ID as string,
+//   chains
+// });
 
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors,
-  publicClient
-});
+// const wagmiConfig = createConfig({
+//   autoConnect: true,
+//   connectors,
+//   publicClient
+// });
 
 function App() {
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains}>
+    // <WagmiConfig config={wagmiConfig}>
+    //   <RainbowKitProvider chains={chains}>
         <HashRouter>
           <Container sx={{
             alignItems: 'center',
@@ -58,8 +58,8 @@ function App() {
             <Footer />
           </Container>
         </HashRouter>
-      </RainbowKitProvider>
-    </WagmiConfig>
+    //   </RainbowKitProvider>
+    // </WagmiConfig>
   );
 }
 

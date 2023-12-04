@@ -10,16 +10,14 @@ if (!secrets.apiKey) {
   );
 }
 
-let requestUrl = "https://youtube.googleapis.com/youtube/v3/channels?part=snippet&id="
-requestUrl += channelId;
-requestUrl += "&key=";
-requestUrl += secrets.apiKey;
-
 const youtubeRequest = Functions.makeHttpRequest({
-  url: requestUrl,
-  headers: {
-    "Content-Type": "application/json"
-  }
+  url: "https://youtube.googleapis.com/youtube/v3/channels",
+  method: "GET",
+  params: {
+    part: "snippet",
+    id: channelId,
+    key: secrets.apiKey
+  },
 });
 
 const youtubeResponse = await youtubeRequest;
@@ -28,9 +26,10 @@ if (youtubeResponse.error) {
   throw new Error("Youtube Error");
 }
 
-const channelDescription = youtubeResponse.items[0].snippet.channelId;
+const channelDescription = youtubeResponse.data.items[0].snippet.description;
+const walletIndex = channelDescription.indexOf(channelOwnerWalletAddress)
 
-return Functions.encodeUint256(channelDescription.indexOf(channelOwnerWalletAddress));
+return Functions.encodeUint256(walletIndex);
 // End Function
 
 `;

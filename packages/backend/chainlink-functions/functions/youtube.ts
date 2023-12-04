@@ -23,15 +23,15 @@ const youtubeRequest = Functions.makeHttpRequest({
 const youtubeResponse = await youtubeRequest;
 
 if (youtubeResponse.error) {
-  throw new Error("Youtube Error");
+  throw new Error("Youtube error");
 }
 
-if (youtubeResponse.data && youtubeResponse.data.items[0]) {
+if (youtubeResponse.data && youtubeResponse.data.items && youtubeResponse.data.items[0]) {
   const channelDescription = youtubeResponse.data.items[0].snippet.description;
   const walletIndex = channelDescription.indexOf(channelOwnerWalletAddress);
   return Functions.encodeString(walletIndex);
 } else {
-  throw new Error("Youtube Error");
+  throw new Error("Youtube channel not found");
 }
 // End Function
 

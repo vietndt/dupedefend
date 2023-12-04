@@ -12,12 +12,18 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Backend is running!');
 });
 
-app.get('/chainlink-functions/youtube', async (req: Request, res: Response) => {
-  await makeRequestMumbai()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  });
+app.post('/chainlink-functions/youtube', async (req: Request, res: Response) => {
+  const { channelId, channelOwnerWalletAddress } = req.body;
+  if (!channelId || !channelOwnerWalletAddress) {
+    return res.status(400).json({ message: 'channelId and channelOwnerWalletAddress are required' });
+  }
+  try {
+    const result = await makeRequestMumbai(channelId, channelOwnerWalletAddress);
+    return res.json(result);
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 app.listen(port, () => {

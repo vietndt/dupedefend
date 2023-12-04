@@ -26,10 +26,13 @@ if (youtubeResponse.error) {
   throw new Error("Youtube Error");
 }
 
-const channelDescription = youtubeResponse.data.items[0].snippet.description;
-const walletIndex = channelDescription.indexOf(channelOwnerWalletAddress)
-
-return Functions.encodeUint256(walletIndex);
+if (youtubeResponse.data && youtubeResponse.data.items[0]) {
+  const channelDescription = youtubeResponse.data.items[0].snippet.description;
+  const walletIndex = channelDescription.indexOf(channelOwnerWalletAddress);
+  return Functions.encodeString(walletIndex);
+} else {
+  throw new Error("Youtube Error");
+}
 // End Function
 
 `;

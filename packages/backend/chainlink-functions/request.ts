@@ -6,7 +6,7 @@ envvar.config();
 import functionsConsumerAbi from './abi/functionsClient.json';
 import { youtubeFunctionString } from './functions/youtube';
 
-const consumerAddress = "0x9C6d9F8a10Af92EFf70DBF8EdA0dB2929D7f0c06";
+const consumerAddress = "0xbB26460Bd58AB5EA3917976188fF1260cDA21197";
 const subscriptionId = 846; // REPLACE this with your subscription ID
 
 // hardcoded for Polygon Mumbai

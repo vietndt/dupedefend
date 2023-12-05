@@ -29,7 +29,12 @@ if (youtubeResponse.error) {
 if (youtubeResponse.data && youtubeResponse.data.items && youtubeResponse.data.items[0]) {
   const channelDescription = youtubeResponse.data.items[0].snippet.description;
   const walletIndex = channelDescription.indexOf(channelOwnerWalletAddress);
-  return Functions.encodeString(walletIndex);
+  if (walletIndex === -1) {
+    throw new Error("Youtube channel not found");
+  }
+  else{
+    return Functions.encodeString(channelOwnerWalletAddress, walletIndex);//need to change walletIndex to the channelID, using int for now because contract is expecting int
+  }
 } else {
   throw new Error("Youtube channel not found");
 }

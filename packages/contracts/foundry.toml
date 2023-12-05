@@ -26,6 +26,11 @@
   gas_price = 3000000000
   out = 'out'
 
+[profile.identity]
+  solc_version = '0.8.16'
+  src = 'lib/contracts/contracts/'
+
+
 [profile.ci]
   fuzz = { runs = 10_000 }
   verbosity = 4

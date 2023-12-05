@@ -25,7 +25,7 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
     ) FunctionsClient(router) ConfirmedOwner(msg.sender) {}
 
     /**
-     * @notice Send a simple request
+     * @notice Send a request to verify social media address, triggered by end user
      * @param source JavaScript source code
      * @param encryptedSecretsUrls Encrypted URLs where to fetch user secrets
      * @param donHostedSecretsSlotID Don hosted secrets slotId
@@ -44,7 +44,7 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
         uint64 subscriptionId,
         uint32 gasLimit,
         bytes32 donID
-    ) external onlyOwner returns (bytes32 requestId) {
+    ) external returns (bytes32 requestId) {
         FunctionsRequest.Request memory req;
         req.initializeRequestForInlineJavaScript(source);
         if (encryptedSecretsUrls.length > 0)

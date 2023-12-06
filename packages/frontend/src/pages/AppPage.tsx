@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
-import Associate from "../components/Associate";
+
+import Verify from "../components/Verify";
 
 const AppPage = () => {
   return (
@@ -11,7 +12,7 @@ const AppPage = () => {
       minHeight: 'calc(100vh - 35px)',
       width: '100%'
     }}>
-      <Associate />
+      <Verify />
     </Box>
   )
 }

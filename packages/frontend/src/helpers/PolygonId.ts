@@ -101,4 +101,5 @@ export const identityCreation = async () => {
   console.log(did.string());
   console.log('=============== Auth BJJ credential ===============');
   console.log(JSON.stringify(credential));
+  return { did, credential };
 }

@@ -20,7 +20,7 @@ const Header = () => {
         fontSize: 22,
         fontWeight: 700
       }}></Typography>
-      <Button component={Link} to="/app" variant="contained" sx={{
+      {/* <Button component={Link} to="/app" variant="contained" sx={{
         alignItems: 'center',
         display: 'flex',
         fontSize: 28,
@@ -30,7 +30,7 @@ const Header = () => {
       }}>
         <RocketLaunchOutlinedIcon />
         <Typography component="span">Launch App</Typography>
-      </Button>
+      </Button> */}
     </Box>
   )
 }

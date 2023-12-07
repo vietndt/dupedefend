@@ -298,6 +298,9 @@ const Verify = () => {
                 }}>
                   <Button variant="contained" disabled={!videoInputControl || !putDetailCheck} onClick={() => {
                     setStep('send_request');
+                  }} sx={{
+                    height: 40,
+                    width: 180
                   }}>Next</Button>
                 </Box>
               </Box>
@@ -320,6 +323,9 @@ const Verify = () => {
                   setTimeout(() => {
                     setStep('completed');
                   }, 3000)
+                }} sx={{
+                  height: 40,
+                  width: 180
                 }}>Start Verify</Button>
               </Box>
             </> : <></>

@@ -90,26 +90,11 @@ const Verify = () => {
     setStep('fill_id');
   }
 
-  const getInfo = async () => {
-    const user = await web3auth?.getUserInfo();
-    console.log(user);
-    const rpc = new RPC(provider);
-    const chainId = await rpc.getChainId();
-    console.log('chainId:', chainId);
-    const address = await rpc.getAccounts();
-    console.log('address:', address);
-    const balance = await rpc.getBalance();
-    console.log('balance:', balance);
-    // const signedMessage = await rpc.signMessage();
-    // console.log(signedMessage);
-    const privateKey = await rpc.getPrivateKey();
-    console.log('privateKey:', privateKey);
-  }
-
   const getDID = async () => {
     const rpc = new RPC(provider);
     const address = await rpc.getAccounts();
-    const res = await identityCreation();
+    const privateKey = await rpc.getPrivateKey();
+    const res = await identityCreation(privateKey);
     setDid(`My wallet: ${address}, My Polygon DID: ${res.did.string()}`)
     setStep('copy_detail');
   }
@@ -121,7 +106,31 @@ const Verify = () => {
       setVideoInputControl(value);
       let id = '';
       if (value.indexOf('?v=') !== -1) {
-        id = value.slice(value.indexOf('?v=') + 3, value.length);
+        id = value.slice(value.indexOf('?v=') + 3, value.indexOf('?v=') + 14);
+      } else if (value.indexOf('youtu.be') !== -1) {
+        id = value.slice(value.indexOf('youtu.be') + 9, value.indexOf('youtu.be') + 20);
+      } else {
+        id = value;
+      }
+      const check = await checkVideo(id);
+      if (check) {
+        setVideoPreviewUrl(`https://www.youtube.com/embed/${id}`);
+        setInvalidVideo(false);
+      } else {
+        setInvalidVideo(true);
+      }
+    }
+  }
+
+  const validateValue = async (value: string) => {
+    if (value) {
+      setVideoPreviewUrl('');
+      setVideoInputControl(value);
+      let id = '';
+      if (value.indexOf('?v=') !== -1) {
+        id = value.slice(value.indexOf('?v=') + 3, value.indexOf('?v=') + 14);
+      } else if (value.indexOf('youtu.be') !== -1) {
+        id = value.slice(value.indexOf('youtu.be') + 9, value.indexOf('youtu.be') + 20);
       } else {
         id = value;
       }
@@ -222,7 +231,11 @@ const Verify = () => {
                   marginTop: 1
                 }}>
                   <Button variant="contained" disabled={!videoInputControl || invalidVideo} onClick={() => {
-                    setStep('creating_identify')
+                    if (!videoPreviewUrl) {
+                      validateValue(videoInputControl);
+                      return;
+                    }
+                    setStep('creating_identify');
                     getDID();
                   }} sx={{
                     height: 40,

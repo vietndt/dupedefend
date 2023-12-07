@@ -1,22 +1,14 @@
-
-
 import {
   BjjProvider, CredentialStorage, CredentialWallet, defaultEthConnectionConfig, EthStateStorage, ICredentialWallet, IDataStorage,
   Identity, IdentityStorage, IdentityWallet, IIdentityWallet, InMemoryDataSource, InMemoryMerkleTreeStorage, InMemoryPrivateKeyStore,
   KMS, KmsKeyType, Profile, W3CCredential, EthConnectionConfig, CredentialStatusType, CredentialStatusResolverRegistry, IssuerResolver, RHSResolver,
-  OnChainResolver, AgentResolver, core, AbstractPrivateKeyStore
+  OnChainResolver, AgentResolver, core, AbstractPrivateKeyStore, encodeBase64url
 } from '@0xpolygonid/js-sdk';
 
 export const initInMemoryDataStorage = () => {
   let conf: EthConnectionConfig = defaultEthConnectionConfig;
   conf.contractAddress = '0x134B1BE34911E39A8397ec6289782989729807a4';
   conf.url = 'https://polygon-mumbai.g.alchemy.com/v2/skcObGFfdsDGaGOWAmN7O1aNKyJkjXW1';
- 
-  // change here priority fees in case transaction is stuck or processing too long
-  // conf.maxPriorityFeePerGas = '250000000000' - 250 gwei
-  // conf.maxFeePerGas = '250000000000' - 250 gwei
-
-  
 
   var dataStorage = {
     credential: new CredentialStorage(new InMemoryDataSource<W3CCredential>()),
@@ -32,7 +24,7 @@ export const initInMemoryDataStorage = () => {
   return dataStorage;
 }
 
-export const initIdentityWallet = async(
+export const initIdentityWallet = async (
   dataStorage: IDataStorage,
   credentialWallet: ICredentialWallet,
   keyStore: AbstractPrivateKeyStore
@@ -74,7 +66,7 @@ export const initInMemoryDataStorageAndWallets = async () => {
   };
 }
 
-export const createIdentity = async (identityWallet: IIdentityWallet) => {
+export const createIdentity = async (identityWallet: IIdentityWallet, privateKey: string) => {
   const { did, credential } = await identityWallet.createIdentity({
     method: core.DidMethod.Iden3,
     blockchain: core.Blockchain.Polygon,
@@ -82,7 +74,8 @@ export const createIdentity = async (identityWallet: IIdentityWallet) => {
     revocationOpts: {
       type: CredentialStatusType.Iden3ReverseSparseMerkleTreeProof,
       id: 'https://rhs-staging.polygonid.me'
-    }
+    },
+    seed: Buffer.from(privateKey, 'hex')
   });
 
   return {
@@ -91,15 +84,8 @@ export const createIdentity = async (identityWallet: IIdentityWallet) => {
   };
 }
 
-export const identityCreation = async () => {
-  console.log('=============== key creation ===============');
-
+export const identityCreation = async (privateKey: string) => {
   let { identityWallet } = await initInMemoryDataStorageAndWallets();
-  const { did, credential } = await createIdentity(identityWallet);
-
-  console.log('=============== did ===============');
-  console.log(did.string());
-  console.log('=============== Auth BJJ credential ===============');
-  console.log(JSON.stringify(credential));
+  const { did, credential } = await createIdentity(identityWallet, privateKey);
   return { did, credential };
 }

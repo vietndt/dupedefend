@@ -82,15 +82,13 @@ export default class EthereumRpc {
     }
   }
 
-  async signMessage() {
+  async signMessage(message: string) {
     try {
       const ethersProvider = new ethers.BrowserProvider(this.provider);
       const signer = ethersProvider.getSigner();
 
-      const originalMessage = "YOUR_MESSAGE";
-
       // Sign the message
-      const signedMessage = await (await signer).signMessage(originalMessage);
+      const signedMessage = await (await signer).signMessage(message);
 
       return signedMessage;
     } catch (error) {

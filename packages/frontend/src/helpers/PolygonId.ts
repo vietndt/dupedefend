@@ -2,7 +2,7 @@ import {
   BjjProvider, CredentialStorage, CredentialWallet, defaultEthConnectionConfig, EthStateStorage, ICredentialWallet, IDataStorage,
   Identity, IdentityStorage, IdentityWallet, IIdentityWallet, InMemoryDataSource, InMemoryMerkleTreeStorage, InMemoryPrivateKeyStore,
   KMS, KmsKeyType, Profile, W3CCredential, EthConnectionConfig, CredentialStatusType, CredentialStatusResolverRegistry, IssuerResolver, RHSResolver,
-  OnChainResolver, AgentResolver, core, AbstractPrivateKeyStore, encodeBase64url
+  OnChainResolver, AgentResolver, core, AbstractPrivateKeyStore
 } from '@0xpolygonid/js-sdk';
 
 export const initInMemoryDataStorage = () => {

@@ -1,4 +1,4 @@
-import { Box, FormControl, TextField, Button, Paper, Typography, CircularProgress, InputAdornment, IconButton, OutlinedInput } from "@mui/material";
+import { Box, FormControl, TextField, Button, Paper, Typography, CircularProgress, InputAdornment, IconButton, OutlinedInput, InputLabel, Checkbox, FormControlLabel } from "@mui/material";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { useEffect, useState } from "react";
@@ -10,6 +10,7 @@ import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { identityCreation } from "../helpers/PolygonId";
+import VideoPreview from "./VideoPreview";
 
 const Verify = () => {
   const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null);
@@ -18,6 +19,9 @@ const Verify = () => {
   const [status, setStatus] = useState<ADAPTER_STATUS_TYPE>();
   const [step, setStep] = useState<'fill_id' | 'creating_identify' | 'copy_detail' | 'send_request' | 'completing' | 'completed'>();
   const [did, setDid] = useState<string>('');
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string>();
+  const [invalidVideo, setInvalidVideo] = useState<boolean>();
+  const [putDetailCheck, setPutDetailCheck] = useState<boolean>(false);
 
   useEffect(() => {
     const privateKeyProvider = new EthereumPrivateKeyProvider({
@@ -106,8 +110,42 @@ const Verify = () => {
     const rpc = new RPC(provider);
     const address = await rpc.getAccounts();
     const res = await identityCreation();
-    setDid(`My wallet: ${address},\nMy Polygon DID: ${res.did.string()}`)
+    setDid(`My wallet: ${address}, My Polygon DID: ${res.did.string()}`)
     setStep('copy_detail');
+  }
+
+  const pasteUrl = async () => {
+    const value = await window.navigator.clipboard.readText();
+    if (value) {
+      setVideoPreviewUrl('');
+      setVideoInputControl(value);
+      let id = '';
+      if (value.indexOf('?v=') !== -1) {
+        id = value.slice(value.indexOf('?v=') + 3, value.length);
+      } else {
+        id = value;
+      }
+      const check = await checkVideo(id);
+      if (check) {
+        setVideoPreviewUrl(`https://www.youtube.com/embed/${id}`);
+        setInvalidVideo(false);
+      } else {
+        setInvalidVideo(true);
+      }
+    }
+  }
+
+  const checkVideo = async (id: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`https://youtube.googleapis.com/youtube/v3/videos?part=snippet&id=${id}&key=AIzaSyA4dU5I5bVpwCHEXkxRFBR5v9Jt-EiVFJI`);
+      const data = await response.json();
+      if (data.items && data.items[0] && data.items[0].snippet) {
+        return true;
+      }
+      return false;
+    } catch (err) {
+      return false;
+    }
   }
 
   return (
@@ -148,21 +186,47 @@ const Verify = () => {
               }}>
                 <FormControl sx={{
                   width: { xs: '100%' }
-                }}>
-                  <TextField
+                }} variant="outlined">
+                  <InputLabel htmlFor="outlined-adornment-password">Video ID or Video URL *</InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-password"
                     label="Video ID or Video URL *"
-                    helperText="E.g. xyFa2amJJoY or https://www.youtube.com/watch?v=xyFa2amJJoY"
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <Button onClick={pasteUrl}>paste</Button>
+                      </InputAdornment>
+                    }
                     value={videoInputControl}
                     onChange={(event) => {
                       const value = event.target.value;
                       setVideoInputControl(value);
                     }}
+                    onPaste={pasteUrl}
                   />
                 </FormControl>
-                <Box>
-                  <Button variant="contained" disabled={!videoInputControl} onClick={() => {
+                {videoPreviewUrl ?
+                  <VideoPreview url={videoPreviewUrl} /> :
+                  <>
+                    {invalidVideo ?
+                      <Typography component="h3" sx={{
+                        fontSize: 13,
+                        color: 'error.main',
+                        fontWeight: 600
+                      }}>Invalid video</Typography> : <></>
+                    }
+                  </>
+                }
+                <Box sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  marginTop: 1
+                }}>
+                  <Button variant="contained" disabled={!videoInputControl || invalidVideo} onClick={() => {
                     setStep('creating_identify')
                     getDID();
+                  }} sx={{
+                    height: 40,
+                    width: 180
                   }}>Next</Button>
                 </Box>
               </Box>
@@ -184,14 +248,14 @@ const Verify = () => {
           }
           {step === 'copy_detail' ?
             <>
-            <Typography component="h3" sx={{
-              fontSize: 20,
-              fontWeight: 600
-            }}>Identify Created</Typography>
-            <Typography component="h3" sx={{
-              fontSize: 13,
-              fontWeight: 600
-            }}>Put this into your video description and then click next</Typography>
+              <Typography component="h3" sx={{
+                fontSize: 20,
+                fontWeight: 600
+              }}>Identify Created</Typography>
+              <Typography component="h3" sx={{
+                fontSize: 13,
+                fontWeight: 600
+              }}>Put this into your video description and then click next</Typography>
               <Box component="form" sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -219,9 +283,21 @@ const Verify = () => {
                     }
                   />
                 </FormControl>
-                <Box>
-                  <Button variant="contained" disabled={!videoInputControl} onClick={() => {
-                      setStep('send_request');
+                <FormControlLabel
+                  control={
+                    <Checkbox checked={putDetailCheck} onChange={(e) => {
+                      setPutDetailCheck(e.target.checked)
+                    }} name="gilad" />
+                  }
+                  label="I have put information above in my video description"
+                />
+                <Box sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  marginTop: 1
+                }}>
+                  <Button variant="contained" disabled={!videoInputControl || !putDetailCheck} onClick={() => {
+                    setStep('send_request');
                   }}>Next</Button>
                 </Box>
               </Box>
@@ -232,14 +308,19 @@ const Verify = () => {
               <Typography component="h3" sx={{
                 fontSize: 20,
                 fontWeight: 600
-              }}>Complete verify</Typography>
-              <Box>
+              }}>Start verify your video</Typography>
+              <VideoPreview url={videoPreviewUrl} />
+              <Box sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginTop: 1
+              }}>
                 <Button variant="contained" disabled={!videoInputControl} onClick={() => {
                   setStep('completing');
                   setTimeout(() => {
                     setStep('completed');
                   }, 3000)
-                }}>Complete</Button>
+                }}>Start Verify</Button>
               </Box>
             </> : <></>
           }

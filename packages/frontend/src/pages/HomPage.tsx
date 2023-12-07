@@ -15,10 +15,10 @@ const HomePage = () => {
     }}>
       <Box sx={{
         alignItems: 'center',
-        backgroundImage: 'url("images/headline-bg.jpeg")',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
+        // backgroundImage: 'url("images/headline-bg.jpeg")',
+        // backgroundSize: 'cover',
+        // backgroundPosition: 'center',
+        // backgroundRepeat: 'no-repeat',
         display: 'flex',
         flexDirection: 'column',
         gap: 2,

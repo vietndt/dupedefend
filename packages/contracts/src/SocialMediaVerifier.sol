@@ -14,7 +14,7 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
     bytes public s_lastResponse;
     bytes public s_lastError;
     address public issuerSimpleAddress;
-    mapping(bytes32 => address) public requestToUser;
+    mapping(bytes32 => string[]) public requestToUserArgs;
     
     error UnexpectedRequestOr(address requestor);
 
@@ -63,7 +63,7 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
             gasLimit,
             donID
         );
-        requestToUser[s_lastRequestId] = msg.sender;
+        requestToUserArgs[s_lastRequestId] = args;//later the args are used to issue the polygon credentials
         return s_lastRequestId;
     }
 
@@ -102,19 +102,18 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
         bytes memory response,
         bytes memory err
     ) internal override {
-        //get user address from response and check if it maps to the requestor, this is used to verify
-        //that the social media verification was requested by the same person who requested the credential
-        (address requestor, uint256 channelID) = extractAddressAndChannel(response);
 
-        if (requestToUser[requestId] != requestor) {
-            revert UnexpectedRequestOr(requestor);
-        }
+        // if (requestToUserArgs[requestId] != requestor) {
+        //     revert UnexpectedRequestOr(requestor);
+        // }
+        string[] memory requestUserArgs = requestToUserArgs[requestId];
         // Encode the function call, I will create a mapping between request id and user address
         // check if the response has address and it matches the user address
-        bytes memory encodedData = abi.encodeWithSignature("issueCredential(uint256,address)", channelID, requestor);
-        (bool success,) = issuerSimpleAddress.call(encodedData);
-        s_lastResponse = response;
-        s_lastError = err;
+        // channel id, address, uuid of user
+        bytes memory encodedData = abi.encodeWithSignature("issueCredential(string,string,string)", requestUserArgs[0], requestUserArgs[1],requestUserArgs[2]);
+        (bool success,) =0                              m                                                                      issuerSimpleAddress.call(encodedData);
+        s_lastResponse = response;000000
+0        s_lastError = err;
         emit Response(requestId, s_lastResponse, s_lastError, success);
     }
 
@@ -126,16 +125,24 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
         return issuerSimpleAddress;
     }
 
-    function extractAddressAndChannel(bytes memory response) private pure returns (address addr, uint256 channelID) {
-        require(response.length >= 20, "Response has an invalid length");
+dghb  nhbgt  
+0
 
-        // Extract the address
-        assembly {
-            addr := mload(add(response, 20))
-        }
+ 01    
+  3W2
 
-        // Extract the channel id into uint
-        channelID = BytesLib.toUint256(response, 20);
-        
-    }
-}
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 QA 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+} 00000000

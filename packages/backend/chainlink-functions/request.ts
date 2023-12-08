@@ -24,7 +24,9 @@ const makeRequest = async (channelId: string, channelOwnerWalletAddress: string)
     // Initialize functions settings
     const source = youtubeFunctionString;
   
-    const args = [channelId, channelOwnerWalletAddress];
+    const args = [
+      channelId
+      , channelOwnerWalletAddress];
     const secrets: any = { apiKey: process.env.YOUTUBE_API_KEY };
     const slotIdNumber = 0; // slot ID where to upload the secrets
     const expirationTimeMinutes = 15; // expiration time in minutes of the secrets
@@ -62,7 +64,7 @@ const makeRequest = async (channelId: string, channelOwnerWalletAddress: string)
     if (errorString) {
       console.log(`❌ Error during simulation: `, errorString);
     } else {
-      const returnType = ReturnType.uint256;
+      const returnType = ReturnType.string;
       const responseBytesHexstring = response.responseBytesHexstring;
       if (ethers.utils.arrayify(responseBytesHexstring).length > 0) {
         const decodedResponse = decodeResult(
@@ -118,6 +120,7 @@ const makeRequest = async (channelId: string, channelOwnerWalletAddress: string)
     console.log(
       `Upload encrypted secret to gateways ${gatewayUrls}. slotId ${slotIdNumber}. Expiration in minutes: ${expirationTimeMinutes}`
     );
+    
     // Upload secrets
     const uploadResult: any = await secretsManager.uploadEncryptedSecretsToDON({
       encryptedSecretsHexstring: encryptedSecretsObj.encryptedSecrets,
@@ -134,15 +137,19 @@ const makeRequest = async (channelId: string, channelOwnerWalletAddress: string)
       `\n✅ Secrets uploaded properly to gateways ${gatewayUrls}! Gateways response: `,
       uploadResult
     );
-  
+    
     const donHostedSecretsVersion = parseInt(uploadResult.version); // fetch the reference of the encrypted secrets
-  
-    const functionsConsumer = new ethers.Contract(
+    // const donHostedSecretsVersion = 1701864046 // found this after 1 manual try
+
+      console.log("donHostedSecretsVersion", donHostedSecretsVersion)
+
+      const functionsConsumer = new ethers.Contract(
       consumerAddress,
       functionsConsumerAbi,
       signer
     );
     // Actual transaction call
+   
     const transaction = await functionsConsumer.sendRequest(
       source, // source
       "0x", // user hosted secrets - encryptedSecretsUrls - empty in this example
@@ -169,6 +176,9 @@ const makeRequest = async (channelId: string, channelOwnerWalletAddress: string)
       provider: provider,
       functionsRouterAddress: routerAddress,
     }); // Instantiate a ResponseListener object to wait for fulfillment.
+    
+    
+   
     (async () => {
       try {
         const response: any = await new Promise((resolve, reject) => {
@@ -231,10 +241,12 @@ const makeRequest = async (channelId: string, channelOwnerWalletAddress: string)
             resolve({ walletIndex: decodedResponse.toString() });
           }
         }
+        
       } catch (error) {
         console.error("Error listening for response:", error);
       }
     })();
+    
   })
 };
 

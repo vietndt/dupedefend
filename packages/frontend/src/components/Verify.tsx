@@ -95,6 +95,7 @@ const Verify = () => {
     const address = await rpc.getAccounts();
     const privateKey = await rpc.getPrivateKey();
     const res = await identityCreation(privateKey);
+    console.log(res);
     setDid(`My wallet: ${address}, My Polygon DID: ${res.did.string()}`)
     setStep('copy_detail');
   }

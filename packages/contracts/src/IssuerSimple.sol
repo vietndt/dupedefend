@@ -42,15 +42,16 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
     }
     
     function setClaim(
-        address _uuid,
-        uint256 _id
+        uint256 _id, 
+        string memory _uuid,
+        uint256[8] memory _claimData
     ) internal {
         claimsMap[_id][_uuid] = ClaimInfo({
             schemaURL: schemaURL,
             schemaHash: schemaHash,
             schemaJSON: schemaJSON,
             credentialType: credentialType,
-            claim: [_id, 0, 0, 0, 0, 0, 0, 0]
+            claim: _claimData
         }); 
         claimsMapSize++;
     }
@@ -82,7 +83,7 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
     }
 
     // we just call this directly from the chainlink fullfillment and see if it works
-    function issueCredential(uint256 _channelId, address requestor) public {
+    function issueCredential(string memory _channelId, string memory requestor, string memory _uuid) public {
         ClaimBuilder.ClaimData memory claimData = ClaimBuilder.ClaimData({
              // metadata
             schemaHash: schemaHash,
@@ -103,7 +104,7 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
         });
         uint256[8] memory claim = ClaimBuilder.build(claimData);
         addClaimAndTransit(claim);
-        setClaim(requestor, _channelId); //1 to denote true
+        setClaim(_userId, _uuid, claim);
         emit Claimed(requestor, _channelId);
     }
 

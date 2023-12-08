@@ -1,33 +1,38 @@
-// // SPDX-License-Identifier: UNLICENSED
-// pragma solidity >=0.8.21 <0.9.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity >=0.8.0 <0.9.0;
 
-// import { PRBTest } from "@prb/test/PRBTest.sol";
-// import { console2 } from "forge-std/console2.sol";
-// import { StdCheats } from "forge-std/StdCheats.sol";
+import { PRBTest } from "@prb/test/PRBTest.sol";
+import { console2 } from "forge-std/console2.sol";
+import { StdCheats } from "forge-std/StdCheats.sol";
+import { IssuerSimple } from "../src/IssuerSimple.sol";
 
-// import { Foo } from "../src/Foo.sol";
+/// @dev If this is your first time with Forge, read this tutorial in the Foundry Book:
+/// https://book.getfoundry.sh/forge/writing-tests
+contract IssuerSimpleTest is PRBTest, StdCheats {
+    IssuerSimple private issuer;
 
-// interface IERC20 {
-//     function balanceOf(address account) external view returns (uint256);
-// }
+    /// @dev A function invoked before each test case is run.
+    function setUp() public virtual {
+        // Instantiate the contract-under-test.
+         issuer = new IssuerSimple();
+         issuer.initialize(0x134B1BE34911E39A8397ec6289782989729807a4);
+    }
+    
+    // /// @dev Basic test. Run it with `forge test -vvv` to see the console log.
+    // function test_Issuance() external {
+    //     console2.log("Test Issuance");
+    //     uint256 _channelId = 1;
+    //     uint bal = address(0x29d5ab1282ee60d9bE352D625a65B4f0939a46a1).balance;
+    //     console2.log("Balance", bal);
+    //     address requestor = address(0x29d5ab1282ee60d9bE352D625a65B4f0939a46a1);
+    //     vm.prank(requestor);
+    //     issuer.issueCredential(_channelId, requestor);
+    //     console2.log("Issued");
 
-// /// @dev If this is your first time with Forge, read this tutorial in the Foundry Book:
-// /// https://book.getfoundry.sh/forge/writing-tests
-// contract FooTest is PRBTest, StdCheats {
-//     Foo internal foo;
+    // }
+}
 
-//     /// @dev A function invoked before each test case is run.
-//     function setUp() public virtual {
-//         // Instantiate the contract-under-test.
-//         foo = new Foo();
-//     }
 
-//     /// @dev Basic test. Run it with `forge test -vvv` to see the console log.
-//     function test_Example() external {
-//         console2.log("Hello World");
-//         uint256 x = 42;
-//         assertEq(foo.id(x), x, "value mismatch");
-//     }
 
 //     /// @dev Fuzz test that provides random values for an unsigned integer, but which rejects zero as an input.
 //     /// If you need more sophisticated input validation, you should use the `bound` utility instead.

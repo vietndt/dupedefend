@@ -1,9 +1,11 @@
-import { Box, Button, Typography } from "@mui/material";
-import RocketLaunchOutlinedIcon from '@mui/icons-material/RocketLaunchOutlined';
-import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
-import { Link } from "react-router-dom";
+import { Box, ButtonBase, Paper, Typography } from "@mui/material";
+import AddModeratorOutlinedIcon from '@mui/icons-material/AddModeratorOutlined';
+import OndemandVideoOutlinedIcon from '@mui/icons-material/OndemandVideoOutlined';
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
+  const navigate = useNavigate();
+
   return (
     <Box sx={{
       alignItems: 'center',
@@ -11,40 +13,27 @@ const HomePage = () => {
       flexDirection: 'column',
       justifyContent: 'center',
       minHeight: '100vh',
+      padding: '50px 16px',
       width: '100%'
     }}>
       <Box sx={{
         alignItems: 'center',
-        // backgroundImage: 'url("images/headline-bg.jpeg")',
-        // backgroundSize: 'cover',
-        // backgroundPosition: 'center',
-        // backgroundRepeat: 'no-repeat',
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
-        height: '100vh',
+        minHeight: '100vh',
         justifyContent: 'center',
         padding: { xs: '0 16px', sm: '0 32px', md: '0 50px' },
         width: '100%'
       }}>
         <Typography component="h1" sx={{
-          background: 'rgba(41, 60, 103, .85)',
-          color: '#ffffff',
+          color: '#293862',
           fontSize: 36,
           fontWeight: 400,
           textAlign: 'center',
           maxWidth: 500
         }}>Protect Your Original Content with Dupe Defend</Typography>
         <Typography component="p" sx={{
-          background: 'rgba(255, 255, 255, .75)',
-          color: '#293862',
-          fontSize: 24,
-          fontWeight: 600,
-          textAlign: 'center',
-          maxWidth: 735
-        }}>Using Chainlink, Zero-Knowledge Proofs, and Ethereum Attestation to Secure Your Creative Work</Typography>
-        <Typography component="p" sx={{
-          background: 'rgba(255, 255, 255, .75)',
           color: '#293862',
           fontSize: 20,
           fontWeight: 500,
@@ -54,64 +43,91 @@ const HomePage = () => {
         <Box sx={{
           alignItems: 'center',
           display: 'flex',
-          gap: 2
+          flexWrap: 'wrap',
+          gap: 2,
+          justifyContent: 'center',
+          marginTop: 2
         }}>
-          <Button component={Link} to="https://github.com/vietndt/dupedefend.git" variant="contained" sx={{
+          <ButtonBase component={Paper} sx={{
             alignItems: 'center',
+            background: '#ffffff',
             display: 'flex',
-            fontSize: 28,
-            gap: 1,
-            height: 40,
-            width: 180
+            flexDirection: 'column',
+            gap: .5,
+            padding: '16px 32px',
+            width: 200
+          }} onClick={() => {
+            navigate('certify');
           }}>
-            <CodeOutlinedIcon fontSize="inherit" />
-            <Typography component="span">Github</Typography>
-          </Button>
-          <Button component={Link} to="/app" variant="contained" sx={{
+            <AddModeratorOutlinedIcon sx={{
+              fontSize: 50
+            }} />
+            <Typography component="h3" sx={{
+              fontSize: 18,
+              fontWeight: 600
+            }}>Certify a video</Typography>
+            <Typography component="p" sx={{
+              fontSize: 14
+            }}>(for video owner)</Typography>
+          </ButtonBase>
+          <ButtonBase component={Paper} sx={{
             alignItems: 'center',
+            background: '#ffffff',
             display: 'flex',
-            fontSize: 28,
-            gap: 1,
-            height: 40,
-            width: 180
+            flexDirection: 'column',
+            gap: .5,
+            padding: '16px 32px',
+            width: 200
+          }} onClick={() => {
+            navigate('verify');
           }}>
-            <RocketLaunchOutlinedIcon />
-            <Typography component="span">Launch App</Typography>
-          </Button>
+            <OndemandVideoOutlinedIcon sx={{
+              fontSize: 50
+            }} />
+            <Typography component="h3" sx={{
+              fontSize: 18,
+              fontWeight: 600
+            }}>Verify a video</Typography>
+            <Typography component="p" sx={{
+              fontSize: 14
+            }}>(for viewer)</Typography>
+          </ButtonBase>
         </Box>
       </Box>
+    
+
       <Box sx={{
         alignItems: 'center',
         display: 'flex',
         flexDirection: 'column',
         gap: 4,
-        height: 'calc(100vh - 35px)',
+        minHeight: 'calc(100vh - 35px)',
         justifyContent: 'center',
         padding: { xs: '0 16px', sm: '0 32px', md: '0 50px' },
         width: '100%'
       }}>
-      <Box sx={{
-        alignItems: 'center',
-        background: '#ffffff',
-        boxShadow: '0 4px 4px #00000040',
-        color: '#293862',
-        display: 'flex',
-        flexDirection: 'column',
-        maxWidth: 600,
-        padding: 2,
-        width: '100%'
-      }}>
-        <Typography component="h3" sx={{
-          fontSize: 24,
-          fontWeight: 600,
-          textAlign: 'center'
-        }}>Chainlink Functions</Typography>
-        <Typography component="p" sx={{
-          fontSize: 18,
-          fontWeight: 400,
-          textAlign: 'center'
-        }}>Our platform integrates Chainlink functions to connect your content with real-world data, events, and payments. Chainlink's secure and reliable infrastructure ensures that your content is protected and its authenticity is verifiable.</Typography>
-      </Box>
+        <Box sx={{
+          alignItems: 'center',
+          background: '#ffffff',
+          boxShadow: '0 4px 4px #00000040',
+          color: '#293862',
+          display: 'flex',
+          flexDirection: 'column',
+          maxWidth: 600,
+          padding: 2,
+          width: '100%'
+        }}>
+          <Typography component="h3" sx={{
+            fontSize: 24,
+            fontWeight: 600,
+            textAlign: 'center'
+          }}>Chainlink Functions</Typography>
+          <Typography component="p" sx={{
+            fontSize: 18,
+            fontWeight: 400,
+            textAlign: 'center'
+          }}>Our platform integrates Chainlink functions to connect your content with real-world data, events, and payments. Chainlink's secure and reliable infrastructure ensures that your content is protected and its authenticity is verifiable.</Typography>
+        </Box>
         <Box sx={{
           alignItems: 'center',
           background: '#ffffff',

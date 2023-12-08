@@ -1,4 +1,4 @@
-import { Box, FormControl, TextField, Button, Paper, Typography, CircularProgress, InputAdornment, IconButton, OutlinedInput, InputLabel, Checkbox, FormControlLabel } from "@mui/material";
+import { Box, FormControl, Button, Paper, Typography, CircularProgress, InputAdornment, IconButton, OutlinedInput, InputLabel, Checkbox, FormControlLabel, Link } from "@mui/material";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { useEffect, useState } from "react";
@@ -12,7 +12,9 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { identityCreation } from "../helpers/PolygonId";
 import VideoPreview from "./VideoPreview";
 
-const Verify = () => {
+const Certify = (props: {
+  setLoggedIn: Function
+}) => {
   const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null);
   const [provider, setProvider] = useState<any>();
   const [videoInputControl, setVideoInputControl] = useState<string>('');
@@ -71,6 +73,7 @@ const Verify = () => {
         setProvider(web3auth.provider);
       };
       setStatus(web3auth.status);
+      props.setLoggedIn(web3auth.status === 'connected');
     }
     init();
   }, []);
@@ -87,6 +90,7 @@ const Verify = () => {
     });
     setProvider(web3authProvider);
     setStatus(web3auth?.status);
+    props.setLoggedIn(web3auth?.status === 'connected');
     setStep('fill_id');
   }
 
@@ -172,13 +176,17 @@ const Verify = () => {
         <>
           <Typography component="h3" sx={{
             fontSize: 20,
-            fontWeight: 600
+            fontWeight: 600,
+            textAlign: 'center'
           }}>Welcome to Dupe Defend</Typography>
           <Typography component="h3" sx={{
-            fontSize: 14,
-            fontWeight: 600
+            fontSize: 16,
+            textAlign: 'center'
           }}>Please login with your Google accout to continue</Typography>
-          <Button variant="outlined" startIcon={<GoogleIcon />} disabled={status !== 'ready'} onClick={login}>Login with Google</Button>
+          <Button variant="outlined" startIcon={<GoogleIcon />} disabled={status !== 'ready'} onClick={login} sx={{
+            fontSize: 16,
+            height: 50
+          }}>Login with Google</Button>
         </> :
         <>
           {step === 'fill_id' ?
@@ -209,6 +217,8 @@ const Verify = () => {
                     onChange={(event) => {
                       const value = event.target.value;
                       setVideoInputControl(value);
+                      setInvalidVideo(false);
+                      setVideoPreviewUrl('');
                     }}
                     onPaste={pasteUrl}
                   />
@@ -255,7 +265,7 @@ const Verify = () => {
               <Typography component="h3" sx={{
                 fontSize: 20,
                 fontWeight: 600
-              }}>Creating your identify</Typography>
+              }}>Creating your credentials...</Typography>
               <CircularProgress size={65} color="success" />
             </Box> : <></>
           }
@@ -264,7 +274,7 @@ const Verify = () => {
               <Typography component="h3" sx={{
                 fontSize: 20,
                 fontWeight: 600
-              }}>Identify Created</Typography>
+              }}>Identify credentials</Typography>
               <Typography component="h3" sx={{
                 fontSize: 13,
                 fontWeight: 600
@@ -324,7 +334,7 @@ const Verify = () => {
               <Typography component="h3" sx={{
                 fontSize: 20,
                 fontWeight: 600
-              }}>Start verify your video</Typography>
+              }}>Start certify your video</Typography>
               <VideoPreview url={videoPreviewUrl} />
               <Box sx={{
                 display: 'flex',
@@ -339,7 +349,7 @@ const Verify = () => {
                 }} sx={{
                   height: 40,
                   width: 180
-                }}>Start Verify</Button>
+                }}>Start Certify</Button>
               </Box>
             </> : <></>
           }
@@ -353,7 +363,7 @@ const Verify = () => {
               <Typography component="h3" sx={{
                 fontSize: 20,
                 fontWeight: 600
-              }}>Completing</Typography>
+              }}>Certifying your video...</Typography>
               <CircularProgress size={65} color="success" />
             </Box> : <></>
           }
@@ -368,6 +378,10 @@ const Verify = () => {
                 fontSize: 20,
                 fontWeight: 600
               }}>Successfully</Typography>
+              <Typography sx={{
+                fontSize: 16,
+                textAlign: 'center'
+              }}>Your video has been attested with your credentials and click <Link href={`https://mumbai.polygonscan.com/tx/0x2eb2f6c9c10979eec2bf06002095a0da69e4aae425ff21ec77cbb11f09154bce`} underline="hover">here</Link> to view your verified credentials</Typography>
               <CheckCircleIcon color="success" sx={{
                 fontSize: 48
               }} />
@@ -378,4 +392,4 @@ const Verify = () => {
     </Box>
   )
 }
-export default Verify;
+export default Certify;

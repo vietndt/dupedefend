@@ -1,6 +1,5 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-import RocketLaunchOutlinedIcon from '@mui/icons-material/RocketLaunchOutlined';
 
 const Header = () => {
   return (
@@ -15,11 +14,12 @@ const Header = () => {
       top: 0,
       width: '100%'
     }}>
-      <Typography component="h3" sx={{
-        color: '#f0f4fa',
+      <Typography component={Link} to="/" sx={{
+        color: '#293862',
         fontSize: 22,
-        fontWeight: 700
-      }}></Typography>
+        fontWeight: 800,
+        textDecoration: 'none'
+      }}>Dupe Defend</Typography>
       {/* <Button component={Link} to="/app" variant="contained" sx={{
         alignItems: 'center',
         display: 'flex',

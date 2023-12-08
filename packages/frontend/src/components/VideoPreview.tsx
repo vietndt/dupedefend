@@ -1,5 +1,4 @@
 import { Box } from "@mui/material";
-import { url } from "inspector";
 
 const VideoPreview = (props: {
   url: string | any

@@ -6,6 +6,7 @@ import CertifyHistory from "../components/CertifyHistory";
 const CertifyPage = (props: {
   loggedIn: boolean,
   setLoggedIn: Function,
+  userInfo: any,
   setUserInfo: Function
 }) => {
   return (
@@ -20,7 +21,7 @@ const CertifyPage = (props: {
       width: '100%'
     }}>
       <Certify setLoggedIn={props.setLoggedIn} setUserInfo={props.setUserInfo} />
-      {/* <CertifyHistory loggedIn={props.loggedIn} /> */}
+      <CertifyHistory loggedIn={props.loggedIn} userInfo={props.userInfo} />
     </Box>
   )
 }

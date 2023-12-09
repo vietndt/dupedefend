@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { Box, FormControl, Button, Paper, Typography, OutlinedInput, InputLabel, InputAdornment, CircularProgress } from "@mui/material";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import { useState } from "react";
+
+import { ethers } from "ethers";
+
 import VideoPreview from "./VideoPreview";
 import { getABI } from "../helpers/Contract";
-import { ethers } from "ethers";
 
 const Verify = () => {
   const [step, setStep] = useState<'fill_id' | 'verifying' | 'completed' | 'failed'>('fill_id');
@@ -62,7 +64,7 @@ const Verify = () => {
 
   const checkVideo = async (id: string): Promise<boolean> => {
     try {
-      const response = await fetch(`https://youtube.googleapis.com/youtube/v3/videos?part=snippet&id=${id}&key=AIzaSyA4dU5I5bVpwCHEXkxRFBR5v9Jt-EiVFJI`);
+      const response = await fetch(`https://youtube.googleapis.com/youtube/v3/videos?part=snippet&id=${id}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`);
       const data = await response.json();
       if (data.items && data.items[0] && data.items[0].snippet) {
         return true;
@@ -84,7 +86,7 @@ const Verify = () => {
       return;
     }
     setStep('verifying');
-    const provider = new ethers.providers.JsonRpcProvider('https://polygon-mumbai.g.alchemy.com/v2/skcObGFfdsDGaGOWAmN7O1aNKyJkjXW1');
+    const provider = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_ID}`);
     const abi = getABI('IssuerSimple');
     const contract = new ethers.Contract('0x454e5108cee33c743d8de8ef92aeb749256abc3d', abi, provider);
     const response = await contract.getUserClaim(

@@ -28,7 +28,7 @@ function App() {
             <HomePage />
           } />
           <Route path="/certify" element={
-            <CertifyPage loggedIn={loggedIn} setLoggedIn={setLoggedIn} setUserInfo={setUserInfo} />
+            <CertifyPage loggedIn={loggedIn} setLoggedIn={setLoggedIn} userInfo={userInfo} setUserInfo={setUserInfo} />
           } />
           <Route path="/verify" element={
             <VerifyPage />

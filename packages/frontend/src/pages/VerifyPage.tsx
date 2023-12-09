@@ -1,4 +1,5 @@
 import { Box } from "@mui/material";
+
 import Verify from "../components/Verify";
 
 const VerifyPage = () => {

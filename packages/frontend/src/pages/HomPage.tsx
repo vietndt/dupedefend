@@ -1,7 +1,7 @@
+import { useNavigate } from "react-router-dom";
 import { Box, ButtonBase, Paper, Typography } from "@mui/material";
 import AddModeratorOutlinedIcon from '@mui/icons-material/AddModeratorOutlined';
 import OndemandVideoOutlinedIcon from '@mui/icons-material/OndemandVideoOutlined';
-import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
   const navigate = useNavigate();

@@ -1,21 +1,26 @@
-import { Box, FormControl, Button, Paper, Typography, CircularProgress, InputAdornment, IconButton, OutlinedInput, InputLabel, Checkbox, FormControlLabel, Link } from "@mui/material";
-import { Web3AuthNoModal } from "@web3auth/no-modal";
-import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { useEffect, useState } from "react";
-import RPC from "../helpers/EthereumRPC";
-import { ADAPTER_STATUS_TYPE } from "@web3auth/base";
+import {
+  Box, FormControl, Button, Paper, Typography, CircularProgress, InputAdornment, IconButton, OutlinedInput, InputLabel,
+  Checkbox, FormControlLabel, Link
+} from "@mui/material";
 import GoogleIcon from '@mui/icons-material/Google';
-import { WALLET_ADAPTERS } from "@web3auth/base";
-import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+
+import { Web3AuthNoModal } from "@web3auth/no-modal";
+import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
+import { ADAPTER_STATUS_TYPE } from "@web3auth/base";
+import { WALLET_ADAPTERS } from "@web3auth/base";
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+import { DID } from '@iden3/js-iden3-core';
+import { ethers } from "ethers";
+import { TransactionResponse } from "@ethersproject/providers";
+
+import RPC from "../helpers/EthereumRPC";
 import { identityCreation } from "../helpers/PolygonId";
 import VideoPreview from "./VideoPreview";
-import { DID } from '@iden3/js-iden3-core'
-import { ethers } from "ethers";
 import { getABI } from "../helpers/Contract";
 import { youtubeFunctionString } from "../functions/youtube";
-import { TransactionResponse } from "@ethersproject/providers";
 import { pollingTransaction } from "../helpers/Utilities";
 
 const Certify = (props: {
@@ -26,6 +31,7 @@ const Certify = (props: {
   const [provider, setProvider] = useState<any>();
   const [videoInputControl, setVideoInputControl] = useState<string>('');
   const [videoOrChannelId, setVideoOrChannelId] = useState<string>('');
+  const [txHash, setTxHash] = useState<string>('');
   const [status, setStatus] = useState<ADAPTER_STATUS_TYPE>();
   const [step, setStep] = useState<'fill_id' | 'creating_identify' | 'copy_detail' | 'send_request' | 'completing' | 'completed'>();
   const [did, setDid] = useState<string>('');
@@ -48,7 +54,7 @@ const Certify = (props: {
       },
     });
     const web3auth = new Web3AuthNoModal({
-      clientId: "BFueA9j25I-t1tx4IBtMV1WE-nLztqNw_afIWyaziwcSrhmGg6sLSel-UanfJ0Mp-4WEpn5x0komU5iuzFi7U8U",
+      clientId: process.env.REACT_APP_WEB3_AUTH_CLIENT_ID as string,
       web3AuthNetwork: "sapphire_devnet",
       chainConfig: {
         chainNamespace: "eip155",
@@ -67,7 +73,7 @@ const Certify = (props: {
             name: "Google Login",
             verifier: "dupedefend",
             typeOfLogin: "google",
-            clientId: "842843862501-nru8r1o62e97lfj7ln70cl91h60blilg.apps.googleusercontent.com"
+            clientId: process.env.REACT_APP_WEB3_AUTH_CLIENT_ID as string
           },
         },
       },
@@ -175,7 +181,7 @@ const Certify = (props: {
 
   const checkVideo = async (id: string): Promise<boolean> => {
     try {
-      const response = await fetch(`https://youtube.googleapis.com/youtube/v3/videos?part=snippet&id=${id}&key=AIzaSyA4dU5I5bVpwCHEXkxRFBR5v9Jt-EiVFJI`);
+      const response = await fetch(`https://youtube.googleapis.com/youtube/v3/videos?part=snippet&id=${id}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`);
       const data = await response.json();
       if (data.items && data.items[0] && data.items[0].snippet) {
         return true;
@@ -192,15 +198,26 @@ const Certify = (props: {
     const privateKey = await rpc.getPrivateKey();
     const res = await identityCreation(privateKey);
     const userId = await DID.idFromDID(res.did);
-    const pvd = new ethers.providers.JsonRpcProvider('https://polygon-mumbai.g.alchemy.com/v2/skcObGFfdsDGaGOWAmN7O1aNKyJkjXW1');
+    const pvd = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_ID}`);
     const wallet = new ethers.Wallet(privateKey, pvd);
     const abi = getABI('SocialMediaVerifier');
+    const donHostedSecretsVersion = await fetch(process.env.REACT_APP_API_URL as string, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        videoOrChannelId: videoOrChannelId,
+        ownerWalletAddress: address,
+        type: 'video'
+      })
+    });
     const contract = new ethers.Contract('0xE54C1690Ee523c827C97376d42cd35BeA01de226', abi, wallet);
     const response: TransactionResponse = await contract.sendRequest(
       youtubeFunctionString, // source
       '0x', // encryptedSecretsUrls
       0, // donHostedSecretsSlotID
-      1702112931, // donHostedSecretsVersion
+      donHostedSecretsVersion.json(), // donHostedSecretsVersion
       userId.bigInt(), // userId
       [videoOrChannelId, address, 'video'], // args
       [], // bytesArgs
@@ -208,6 +225,7 @@ const Certify = (props: {
       300000, // gasLimit
       '0x66756e2d706f6c79676f6e2d6d756d6261692d31000000000000000000000000', // donID
     );
+    setTxHash(response.hash);
     pollingTransaction(response.hash, sendRequestCompleted, pvd);
   }
 
@@ -440,7 +458,7 @@ const Certify = (props: {
               <Typography sx={{
                 fontSize: 16,
                 textAlign: 'center'
-              }}>Your video has been attested with your credentials and click <Link href={`https://mumbai.polygonscan.com/tx/0x2eb2f6c9c10979eec2bf06002095a0da69e4aae425ff21ec77cbb11f09154bce`} underline="hover">here</Link> to view your verified credentials</Typography>
+              }}>Your video has been attested with your credentials and click <Link href={`https://mumbai.polygonscan.com/tx/${txHash}`} underline="hover">here</Link> to view your verified credentials</Typography>
               <Button variant="contained" onClick={() => setStep('fill_id')} sx={{
                 height: 40,
                 width: 180

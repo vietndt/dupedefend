@@ -231,13 +231,13 @@ const makeRequest = async (videoOrChannelId: string, ownerWalletAddress: string,
           if (ethers.utils.arrayify(responseBytesHexstring).length > 0) {
             const decodedResponse = decodeResult(
               response.responseBytesHexstring,
-              ReturnType.string
+              ReturnType.uint256
             );
             console.log(
               `\n✅ Decoded response to ${ReturnType.uint256}: `,
               decodedResponse
             );
-            resolve({ walletIndex: decodedResponse.toString() });
+            resolve({ result: decodedResponse.toString() });
           }
         }
         

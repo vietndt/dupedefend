@@ -44,7 +44,8 @@ if (youtubeResponse.error) {
 if (youtubeResponse.data && youtubeResponse.data.items && youtubeResponse.data.items[0]) {
   const description = youtubeResponse.data.items[0].snippet.description;
   const walletIndex = description.indexOf(ownerWalletAddress);
-  return Functions.encodeInt256(walletIndex);
+  const resultInt = walletIndex !== -1 ? 1 : 0;
+  return Functions.encodeUint256(resultInt);
 } else {
   throw new Error("Youtube video or channel not found");
 }

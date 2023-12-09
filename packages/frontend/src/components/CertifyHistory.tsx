@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Link, Paper, Typography } from "@mui/material";
+import { Box, CircularProgress, Link, Paper, Typography } from "@mui/material";
 
 import { ethers } from "ethers";
 
@@ -11,6 +11,7 @@ const CertifyHistory = (props: {
   loggedIn: boolean,
   userInfo: any
 }) => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [history, setHistory] = useState<Array<{
     requestor: string;
     videoOrChannelId: string;
@@ -20,6 +21,7 @@ const CertifyHistory = (props: {
 
   useEffect(() => {
     if (props.userInfo) {
+      setLoading(true);
       const getContractEvents = async () => {
         const provider = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_ID}`);
         const abi = getABI('IssuerSimple');
@@ -43,6 +45,7 @@ const CertifyHistory = (props: {
           });
         });
         setHistory(historyItems);
+        setLoading(false);
       }
       getContractEvents();
     }
@@ -89,34 +92,39 @@ const CertifyHistory = (props: {
               width: '25%'
             }}>Tx Hash</Typography>
           </Box>
-          {history.map(item =>
-            <Box key={item.txHash} sx={{
-              alignItems: 'center',
-              borderBottom: '1px solid #c3c3c3',
-              display: 'flex',
-              padding: '8px 0',
-              width: '100%'
-            }}>
-              <Typography component="h3" sx={{
-                fontSize: 16,
-                width: '25%'
-              }}>
-                <Date blockNumber={item.date} />
-              </Typography>
-              <Link href={`https://youtu.be/${item.videoOrChannelId}`} target="_blank" underline="hover" sx={{
-                fontSize: 16,
-                width: '25%'
-              }}>{item.videoOrChannelId}</Link>
-              <Link href={`https://mumbai.polygonscan.com/address/${item.requestor}`} target="_blank" underline="hover" sx={{
-                fontSize: 16,
-                width: '25%'
-              }}>{shorterAddress(item.requestor)}</Link>
-              <Link href={`https://mumbai.polygonscan.com/tx/${item.txHash}`} target="_blank" underline="hover" sx={{
-                fontSize: 16,
-                width: '25%'
-              }}>{shorterAddress(item.txHash)}</Link>
-            </Box>
-          )}
+          {loading ?
+            <CircularProgress size={65} color="success" /> :
+            <>
+              {history.map(item =>
+                <Box key={item.txHash} sx={{
+                  alignItems: 'center',
+                  borderBottom: '1px solid #c3c3c3',
+                  display: 'flex',
+                  padding: '8px 0',
+                  width: '100%'
+                }}>
+                  <Typography component="h3" sx={{
+                    fontSize: 16,
+                    width: '25%'
+                  }}>
+                    <Date blockNumber={item.date} />
+                  </Typography>
+                  <Link href={`https://youtu.be/${item.videoOrChannelId}`} target="_blank" underline="hover" sx={{
+                    fontSize: 16,
+                    width: '25%'
+                  }}>{item.videoOrChannelId}</Link>
+                  <Link href={`https://mumbai.polygonscan.com/address/${item.requestor}`} target="_blank" underline="hover" sx={{
+                    fontSize: 16,
+                    width: '25%'
+                  }}>{shorterAddress(item.requestor)}</Link>
+                  <Link href={`https://mumbai.polygonscan.com/tx/${item.txHash}`} target="_blank" underline="hover" sx={{
+                    fontSize: 16,
+                    width: '25%'
+                  }}>{shorterAddress(item.txHash)}</Link>
+                </Box>
+              )}
+            </>
+          }
         </Box> : <></>
       }
     </>

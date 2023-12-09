@@ -19,7 +19,7 @@ const Date = (props: {
     }
   }, [props.blockNumber]);
   return (
-    <>{moment(date).format('DD-MM-yyyy')}</>
+    <>{moment(date).format('DD-MM-yyyy, HH:mm')}</>
   )
 }
 export default Date;

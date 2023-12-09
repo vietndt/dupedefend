@@ -73,7 +73,7 @@ const Certify = (props: {
             name: "Google Login",
             verifier: "dupedefend",
             typeOfLogin: "google",
-            clientId: process.env.REACT_APP_WEB3_AUTH_CLIENT_ID as string
+            clientId: process.env.REACT_APP_GOOGLE_OAUTH_CLIENT_ID as string
           },
         },
       },

@@ -19,7 +19,8 @@ import { TransactionResponse } from "@ethersproject/providers";
 import { pollingTransaction } from "../helpers/Utilities";
 
 const Certify = (props: {
-  setLoggedIn: Function
+  setLoggedIn: Function,
+  setUserInfo: Function
 }) => {
   const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null);
   const [provider, setProvider] = useState<any>();
@@ -89,7 +90,21 @@ const Certify = (props: {
   useEffect(() => {
     if (status === 'connected') {
       setStep('fill_id');
+      const getUserInfo = async () => {
+        const rpc = new RPC(provider);
+        const address = await rpc.getAddress();
+        const privateKey = await rpc.getPrivateKey();
+        const res = await identityCreation(privateKey);
+        const userId = await DID.idFromDID(res.did);
+        props.setUserInfo({
+          address,
+          did: res.did.string(),
+          userId: userId.bigInt().toString()
+        });
+      }
+      getUserInfo();
     }
+    // eslint-disable-next-line
   }, [status])
 
   const login = async () => {
@@ -107,23 +122,6 @@ const Certify = (props: {
     const address = await rpc.getAddress();
     const privateKey = await rpc.getPrivateKey();
     const res = await identityCreation(privateKey);
-
-      // step2 : donHostedSecretsVersion get from API (because youtube secret api key)
-      // step3 : make smart contract as below
-      //not sure where this contract call goes, but we need to add this
-      // await functionsConsumer.methods.sendRequest(
-      //   source, // source
-      //   "0x", // user hosted secrets - encryptedSecretsUrls - empty in this example
-      //   slotIdNumber, // slot ID of the encrypted secrets
-      //   donHostedSecretsVersion, // version of the encrypted secrets -> this we need to create api to call from request.ts, will do 
-      // uint256 userId,
-      // string memory channelId,
-      //   [], // bytesArgs - arguments can be encoded off-chain to bytes.
-      //   subscriptionId,
-      //   gasLimit,
-      //   ethers.utils.formatBytes32String(donId) // jobId is bytes32 representation of donId
-      // ).send({from: account});
-    
 
     setDid(`My wallet: ${address}, My Polygon DID: ${res.did.string()}`)
     setStep('copy_detail');
@@ -432,6 +430,9 @@ const Certify = (props: {
               flexDirection: 'column',
               gap: 2
             }}>
+              <CheckCircleIcon color="success" sx={{
+                fontSize: 48
+              }} />
               <Typography component="h3" sx={{
                 fontSize: 20,
                 fontWeight: 600
@@ -440,9 +441,10 @@ const Certify = (props: {
                 fontSize: 16,
                 textAlign: 'center'
               }}>Your video has been attested with your credentials and click <Link href={`https://mumbai.polygonscan.com/tx/0x2eb2f6c9c10979eec2bf06002095a0da69e4aae425ff21ec77cbb11f09154bce`} underline="hover">here</Link> to view your verified credentials</Typography>
-              <CheckCircleIcon color="success" sx={{
-                fontSize: 48
-              }} />
+              <Button variant="contained" onClick={() => setStep('fill_id')} sx={{
+                height: 40,
+                width: 180
+              }}>OK</Button>
             </Box> : <></>
           }
         </>

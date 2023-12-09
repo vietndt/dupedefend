@@ -107,7 +107,8 @@ const Certify = (props: {
     //   "0x", // user hosted secrets - encryptedSecretsUrls - empty in this example
     //   slotIdNumber, // slot ID of the encrypted secrets
     //   donHostedSecretsVersion, // version of the encrypted secrets -> this we need to create api to call from request.ts, will do 
-        //   args, [userId.bigInt(), videoUUID, address]
+    // uint256 userId,
+    // string memory channelId,
     //   [], // bytesArgs - arguments can be encoded off-chain to bytes.
     //   subscriptionId,
     //   gasLimit,

@@ -11,6 +11,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { identityCreation } from "../helpers/PolygonId";
 import VideoPreview from "./VideoPreview";
+import { DID } from '@iden3/js-iden3-core'
 
 const Certify = (props: {
   setLoggedIn: Function
@@ -99,6 +100,21 @@ const Certify = (props: {
     const address = await rpc.getAccounts();
     const privateKey = await rpc.getPrivateKey();
     const res = await identityCreation(privateKey);
+    const userId = await DID.idFromDID(res.did);
+    //not sure where this contract call goes, but we need to add this
+    // await functionsConsumer.methods.sendRequest(
+    //   source, // source
+    //   "0x", // user hosted secrets - encryptedSecretsUrls - empty in this example
+    //   slotIdNumber, // slot ID of the encrypted secrets
+    //   donHostedSecretsVersion, // version of the encrypted secrets -> this we need to create api to call from request.ts, will do 
+        //   args, [userId.bigInt(), videoUUID, address]
+    //   [], // bytesArgs - arguments can be encoded off-chain to bytes.
+    //   subscriptionId,
+    //   gasLimit,
+    //   ethers.utils.formatBytes32String(donId) // jobId is bytes32 representation of donId
+    // ).send({from: account});
+
+    console.log("userId", userId);
     setDid(`My wallet: ${address}, My Polygon DID: ${res.did.string()}`)
     setStep('copy_detail');
   }

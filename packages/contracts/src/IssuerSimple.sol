@@ -33,8 +33,8 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
     }
 
     // credential storage
-    mapping(uint256 => mapping(address => ClaimInfo)) private claimsMap;
-    event Claimed(address requestor, uint256 channelID);
+    mapping(uint256 => mapping(string => ClaimInfo)) private claimsMap;
+    event Claimed(uint256 indexed userId, address requestor, string videoOrChannelId);
 
     function initialize(address _stateContractAddr) public override initializer {
         super.initialize(_stateContractAddr);
@@ -42,11 +42,11 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
     }
     
     function setClaim(
-        uint256 _id, 
+        uint256 _userId, 
         string memory _uuid,
         uint256[8] memory _claimData
     ) internal {
-        claimsMap[_id][_uuid] = ClaimInfo({
+        claimsMap[_userId][_uuid] = ClaimInfo({
             schemaURL: schemaURL,
             schemaHash: schemaHash,
             schemaJSON: schemaJSON,
@@ -56,8 +56,8 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
         claimsMapSize++;
     }
     //TODO:need to change this to be a mapping of address to channel
-    function getUserClaim(uint256 _userId, address _uuid) public view returns (ClaimInfo memory) {
-        return claimsMap[_userId][_uuid];
+    function getUserClaim(uint256 _userId, string memory _videoOrChannelId) public view returns (ClaimInfo memory) {
+        return claimsMap[_userId][_videoOrChannelId];
     }
 
     function setSchema(
@@ -82,8 +82,8 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
         identity.transitState();
     }
 
-    // we just call this directly from the chainlink fullfillment and see if it works
-    function issueCredential(string memory _channelId, string memory requestor, string memory _uuid) public {
+    
+    function issueCredential(uint256 _userId, address _requestor, string memory _videoOrChannelId) public {
         ClaimBuilder.ClaimData memory claimData = ClaimBuilder.ClaimData({
              // metadata
             schemaHash: schemaHash,
@@ -92,20 +92,20 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
             updatable: false,
             merklizedRootPosition: 0,
             version: 0,
-            id: convertAddressToUint256(requestor),
+            id: _userId,
             revocationNonce: claimsMapSize,
             expirationDate: 3183110232,
             // data
             merklizedRoot: 0,
-            indexDataSlotA: convertAddressToUint256(msg.sender),
-            indexDataSlotB: _channelId,//later convert this to the users channel id for now just coded to 1
+            indexDataSlotA: convertAddressToUint256(_requestor),
+            indexDataSlotB: stringToUint256(_videoOrChannelId),
             valueDataSlotA: 0,
             valueDataSlotB: 0
         });
         uint256[8] memory claim = ClaimBuilder.build(claimData);
         addClaimAndTransit(claim);
-        setClaim(_userId, _uuid, claim);
-        emit Claimed(requestor, _channelId);
+        setClaim(_userId, _videoOrChannelId, claim);
+        emit Claimed(_userId, _requestor, _videoOrChannelId);
     }
 
     function weiToGwei(uint weiAmount) internal pure returns (uint256) {
@@ -114,5 +114,12 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
 
     function convertAddressToUint256(address _addr) internal pure returns (uint256) {
         return uint256(uint160(_addr));
+    }
+
+    function stringToUint256(string memory _videoOrChannelId) public pure returns (uint256) {
+        bytes memory theBytes = bytes(_videoOrChannelId);
+        bytes32 theHash = keccak256(theBytes);
+        uint256 theUint256 = uint256(theHash);
+        return theUint256;
     }
 }

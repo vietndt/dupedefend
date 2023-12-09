@@ -20,39 +20,18 @@ contract SocialMediaVerifierTest is PRBTest, StdCheats {
     }
     
     /// @dev Basic test. Run it with `forge test -vvv` to see the console log.
-    function test_Existence() external {
-        // console2.log("Test Requestor Existence");
-        // bytes32 requestID = 0xd78d1f00b277714e1592ad5075dee021130f3ca6aa9247377fa60a68cf8ac1ed;
-        // address requestor = verifier.requestToUser(requestID);
-        // console2.log("requestor", requestor);
-        // assert(requestor != address(0));
-        bytes memory response = hex"307832396435616231323832656536306439624533353244363235613635423466303933396134366131";
-        (address requestorFromResponse, uint256 channelID) =  extractAddressAndChannel(response);        
-        console2.log("requestorFromResponse", requestorFromResponse);
-        console2.log("channelID", channelID);
-    }
+    // function test_Existence() external {
+    //     // console2.log("Test Requestor Existence");
+    //     // bytes32 requestID = 0xd78d1f00b277714e1592ad5075dee021130f3ca6aa9247377fa60a68cf8ac1ed;
+    //     // address requestor = verifier.requestToUser(requestID);
+    //     // console2.log("requestor", requestor);
+    //     // assert(requestor != address(0));
+    //     bytes memory response = hex"307832396435616231323832656536306439624533353244363235613635423466303933396134366131";
+    //     (address requestorFromResponse, uint256 channelID) =  extractAddressAndChannel(response);        
+    //     console2.log("requestorFromResponse", requestorFromResponse);
+    //     console2.log("channelID", channelID);
+    // }
 
-    function extractAddressAndChannel(bytes memory response) private pure returns (address addr, uint256 channelID) {
-        require(response.length >= 20, "Response has an invalid length");
-
-        // Extract the address
-        bytes memory addrBytes = bytesToBytes32(response);
-        addr = BytesLib.toAddress(addrBytes,2);
-        channelID = 0;
-        // Extract the channel id into uint
-        // channelID = BytesLib.toUint256(response, 20);
-        
-    }
-    function bytesToBytes32(bytes memory b) private pure returns (bytes32 out) {
-    uint256 maxLen = 32;
-    if (b.length < 32) {
-      maxLen = b.length;
-    }
-    for (uint256 i = 0; i < maxLen; ++i) {
-      out |= bytes32(b[i]) >> (i * 8);
-    }
-    return out;
-  }
 }
 
 

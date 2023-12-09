@@ -10,11 +10,17 @@ import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
     using FunctionsRequest for FunctionsRequest.Request;
 
+    struct Request {
+        uint256 userId;
+        address requestor;
+        string channelId;
+    }
+
     bytes32 public s_lastRequestId;
     bytes public s_lastResponse;
     bytes public s_lastError;
     address public issuerSimpleAddress;
-    mapping(bytes32 => string[]) public requestToUserArgs;
+    mapping(bytes32 => Request) public requestToUserArgs;
     
     error UnexpectedRequestOr(address requestor);
 
@@ -30,7 +36,8 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
      * @param encryptedSecretsUrls Encrypted URLs where to fetch user secrets
      * @param donHostedSecretsSlotID Don hosted secrets slotId
      * @param donHostedSecretsVersion Don hosted secrets version
-     * @param args List of arguments accessible from within the source code
+     * @param userId User ID this is the DID of the user using DID.getId
+     * @param channelId Channel ID this is the socialmedia/youtube video or channel id of the user
      * @param bytesArgs Array of bytes arguments, represented as hex strings
      * @param subscriptionId Billing ID
      */
@@ -39,7 +46,8 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
         bytes memory encryptedSecretsUrls,
         uint8 donHostedSecretsSlotID,
         uint64 donHostedSecretsVersion,
-        string[] memory args,
+        uint256 userId,
+        string memory channelId,
         bytes[] memory bytesArgs,
         uint64 subscriptionId,
         uint32 gasLimit,
@@ -55,7 +63,6 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
                 donHostedSecretsVersion
             );
         }
-        if (args.length > 0) req.setArgs(args);
         if (bytesArgs.length > 0) req.setBytesArgs(bytesArgs);
         s_lastRequestId = _sendRequest(
             req.encodeCBOR(),
@@ -63,7 +70,7 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
             gasLimit,
             donID
         );
-        requestToUserArgs[s_lastRequestId] = args;//later the args are used to issue the polygon credentials
+        requestToUserArgs[s_lastRequestId] = Request(userId, msg.sender, channelId);
         return s_lastRequestId;
     }
 
@@ -106,14 +113,18 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
         // if (requestToUserArgs[requestId] != requestor) {
         //     revert UnexpectedRequestOr(requestor);
         // }
-        string[] memory requestUserArgs = requestToUserArgs[requestId];
+
         // Encode the function call, I will create a mapping between request id and user address
         // check if the response has address and it matches the user address
         // channel id, address, uuid of user
-        bytes memory encodedData = abi.encodeWithSignature("issueCredential(string,string,string)", requestUserArgs[0], requestUserArgs[1],requestUserArgs[2]);
-        (bool success,) =0                              m                                                                      issuerSimpleAddress.call(encodedData);
-        s_lastResponse = response;000000
-0        s_lastError = err;
+        bytes memory encodedData = abi.encodeWithSignature("issueCredential(uint256,address,string)", 
+        requestToUserArgs[requestId].userId,
+        requestToUserArgs[requestId].requestor,
+        requestToUserArgs[requestId].channelId);
+
+        (bool success,) = issuerSimpleAddress.call(encodedData);
+        s_lastResponse = response;
+        s_lastError = err;
         emit Response(requestId, s_lastResponse, s_lastError, success);
     }
 
@@ -124,25 +135,4 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
     function getIssuerSimpleAddress() external view returns (address) {
         return issuerSimpleAddress;
     }
-
-dghb  nhbgt  
-0
-
- 01    
-  3W2
-
-000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 QA 0
-
-
-
-
-
-
-
-
-
-
-
-
-
-} 00000000
+}

@@ -39,7 +39,7 @@ const HomePage = () => {
           fontWeight: 500,
           textAlign: 'center',
           maxWidth: 980
-        }}>Join Dupe Defend today and take the first step towards protecting your original content. With our advanced technology and commitment to security, you can focus on creating, while we focus on protecting.</Typography>
+        }}>Use Dupe Defend today and take the first step towards protecting your original content. With our advanced technology and commitment to security, you can focus on creating, while we focus on protecting.</Typography>
         <Box sx={{
           alignItems: 'center',
           display: 'flex',
@@ -121,12 +121,39 @@ const HomePage = () => {
             fontSize: 24,
             fontWeight: 600,
             textAlign: 'center'
+          }}>Steps</Typography>
+          <Typography component="p" sx={{
+            fontSize: 18,
+            fontWeight: 400,
+            textAlign: 'center'
+          }}>1. Upload your video <br/>
+          2. Click Certify a Video <br/>
+          3. Enter your video's URL and use the description to link it <br/>
+          4. Click Certify <br/>
+          5. Put a link to the verify in your video description <br/>
+          </Typography>
+        </Box>
+        <Box sx={{
+          alignItems: 'center',
+          background: '#ffffff',
+          boxShadow: '0 4px 4px #00000040',
+          color: '#293862',
+          display: 'flex',
+          flexDirection: 'column',
+          maxWidth: 600,
+          padding: 2,
+          width: '100%'
+        }}>
+          <Typography component="h3" sx={{
+            fontSize: 24,
+            fontWeight: 600,
+            textAlign: 'center'
           }}>Chainlink Functions</Typography>
           <Typography component="p" sx={{
             fontSize: 18,
             fontWeight: 400,
             textAlign: 'center'
-          }}>Our platform integrates Chainlink functions to connect your content with real-world data, events, and payments. Chainlink's secure and reliable infrastructure ensures that your content is protected and its authenticity is verifiable.</Typography>
+          }}>Our platform integrates Chainlink functions to connect your content authenticity with the blockchain. Chainlink's secure and reliable infrastructure ensures that your content is protected and its authenticity is verifiable.</Typography>
         </Box>
         <Box sx={{
           alignItems: 'center',
@@ -143,34 +170,14 @@ const HomePage = () => {
             fontSize: 24,
             fontWeight: 600,
             textAlign: 'center'
-          }}>Zero Knowledge Proofs</Typography>
+          }}>Polygon DID & Social Media Issuer</Typography>
           <Typography component="p" sx={{
             fontSize: 18,
             fontWeight: 400,
             textAlign: 'center'
-          }}>With Zero Knowledge proofs, you can prove the ownership of your content without revealing any sensitive information. This advanced cryptographic technique ensures that your content remains secure and its originality is unquestionable.</Typography>
-        </Box>
-        <Box sx={{
-          alignItems: 'center',
-          background: '#ffffff',
-          boxShadow: '0 4px 4px #00000040',
-          color: '#293862',
-          display: 'flex',
-          flexDirection: 'column',
-          maxWidth: 600,
-          padding: 2,
-          width: '100%'
-        }}>
-          <Typography component="h3" sx={{
-            fontSize: 24,
-            fontWeight: 600,
-            textAlign: 'center'
-          }}>Ethereum Attestation Service</Typography>
-          <Typography component="p" sx={{
-            fontSize: 18,
-            fontWeight: 400,
-            textAlign: 'center'
-          }}>We utilize Ethereum Attestation Service to allow you to attest your content on the Ethereum blockchain. This means that you can create a permanent, immutable record of your content, providing indisputable proof of your content's originality.</Typography>
+          }}>This platform uses polygon's iden3 framework to issue claims that you have created the video in your youtube description.
+          Read more about iden3 <a href="https://docs.iden3.io/">here </a>
+          </Typography>
         </Box>
       </Box>
     </Box>

@@ -6,6 +6,7 @@ import {
 import GoogleIcon from '@mui/icons-material/Google';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
@@ -22,6 +23,8 @@ import VideoPreview from "./VideoPreview";
 import { getABI } from "../helpers/Contract";
 import { youtubeFunctionString } from "../functions/youtube";
 import { pollingTransaction } from "../helpers/Utilities";
+import SnackbarMessage from "./Snackbar";
+import { ISnackbarConfig } from "../models/Snackbar";
 
 const Certify = (props: {
   setLoggedIn: Function,
@@ -33,11 +36,14 @@ const Certify = (props: {
   const [videoOrChannelId, setVideoOrChannelId] = useState<string>('');
   const [txHash, setTxHash] = useState<string>('');
   const [status, setStatus] = useState<ADAPTER_STATUS_TYPE>();
-  const [step, setStep] = useState<'fill_id' | 'creating_identify' | 'copy_detail' | 'send_request' | 'completing' | 'completed'>();
+  const [step, setStep] = useState<'fill_id' | 'creating_identify' | 'copy_detail' | 'send_request' | 'completing' | 'completed' | 'failed'>();
   const [did, setDid] = useState<string>('');
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string>();
   const [invalidVideo, setInvalidVideo] = useState<boolean>();
   const [putDetailCheck, setPutDetailCheck] = useState<boolean>(false);
+  const [snackbar, setSnackbar] = useState<ISnackbarConfig>({
+    isOpen: false
+  } as any);
 
   useEffect(() => {
     const privateKeyProvider = new EthereumPrivateKeyProvider({
@@ -233,241 +239,271 @@ const Certify = (props: {
     if (status === 1) {
       setStep('completed');
     } else if (status === 0) {
-
+      setStep('failed');
     }
   }
 
   return (
-    <Box component={Paper} sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 2,
-      justifyContent: 'center',
-      maxWidth: 500,
-      minHeight: 200,
-      padding: 3,
-      width: '100%'
-    }}>
-      {status !== 'connected' ?
-        <>
-          <Typography component="h3" sx={{
-            fontSize: 20,
-            fontWeight: 600,
-            textAlign: 'center'
-          }}>Welcome to Dupe Defend</Typography>
-          <Typography component="h3" sx={{
-            fontSize: 16,
-            textAlign: 'center'
-          }}>Please login with your Google accout to continue</Typography>
-          <Button variant="outlined" startIcon={<GoogleIcon />} disabled={status !== 'ready'} onClick={login} sx={{
-            fontSize: 16,
-            height: 50
-          }}>Login with Google</Button>
-        </> :
-        <>
-          {step === 'fill_id' ?
-            <>
-              <Typography component="h3" sx={{
-                fontSize: 20,
-                fontWeight: 600
-              }}>Enter your video</Typography>
-              <Box component="form" sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 1.5,
-                width: '100%'
-              }}>
-                <FormControl sx={{
-                  width: { xs: '100%' }
-                }} variant="outlined">
-                  <InputLabel htmlFor="outlined-adornment-password">Video ID or Video URL *</InputLabel>
-                  <OutlinedInput
-                    id="outlined-adornment-password"
-                    label="Video ID or Video URL *"
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <Button onClick={pasteUrl}>paste</Button>
-                      </InputAdornment>
-                    }
-                    value={videoInputControl}
-                    onChange={(event) => {
-                      const value = event.target.value;
-                      setVideoInputControl(value);
-                      setInvalidVideo(false);
-                      setVideoPreviewUrl('');
-                    }}
-                    onPaste={pasteUrl}
-                  />
-                </FormControl>
-                {videoPreviewUrl ?
-                  <VideoPreview url={videoPreviewUrl} /> :
-                  <>
-                    {invalidVideo ?
-                      <Typography component="h3" sx={{
-                        fontSize: 13,
-                        color: 'error.main',
-                        fontWeight: 600
-                      }}>Invalid video</Typography> : <></>
-                    }
-                  </>
-                }
-                <Box sx={{
+    <>
+      <Box component={Paper} sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        justifyContent: 'center',
+        maxWidth: 500,
+        minHeight: 200,
+        padding: 3,
+        width: '100%'
+      }}>
+        {status !== 'connected' ?
+          <>
+            <Typography component="h3" sx={{
+              fontSize: 20,
+              fontWeight: 600,
+              textAlign: 'center'
+            }}>Welcome to Dupe Defend</Typography>
+            <Typography component="h3" sx={{
+              fontSize: 16,
+              textAlign: 'center'
+            }}>Please login with your Google accout to continue</Typography>
+            <Button variant="outlined" startIcon={<GoogleIcon />} disabled={status !== 'ready'} onClick={login} sx={{
+              fontSize: 16,
+              height: 50
+            }}>Login with Google</Button>
+          </> :
+          <>
+            {step === 'fill_id' ?
+              <>
+                <Typography component="h3" sx={{
+                  fontSize: 20,
+                  fontWeight: 600
+                }}>Enter your video</Typography>
+                <Box component="form" sx={{
                   display: 'flex',
-                  justifyContent: 'center',
-                  marginTop: 1
+                  flexDirection: 'column',
+                  gap: 1.5,
+                  width: '100%'
                 }}>
-                  <Button variant="contained" disabled={!videoInputControl || invalidVideo} onClick={() => {
-                    if (!videoPreviewUrl) {
-                      validateValue(videoInputControl);
-                      return;
-                    }
-                    setStep('creating_identify');
-                    getDID();
-                  }} sx={{
-                    height: 40,
-                    width: 180
-                  }}>Next</Button>
-                </Box>
-              </Box>
-            </> : <></>
-          }
-          {step === 'creating_identify' ?
-            <Box sx={{
-              alignItems: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2
-            }}>
-              <Typography component="h3" sx={{
-                fontSize: 20,
-                fontWeight: 600
-              }}>Creating your credentials...</Typography>
-              <CircularProgress size={65} color="success" />
-            </Box> : <></>
-          }
-          {step === 'copy_detail' ?
-            <>
-              <Typography component="h3" sx={{
-                fontSize: 20,
-                fontWeight: 600
-              }}>Identify credentials</Typography>
-              <Typography component="h3" sx={{
-                fontSize: 13,
-                fontWeight: 600
-              }}>Put this into your video description and then click next</Typography>
-              <Box component="form" sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 1.5,
-                width: '100%'
-              }}>
-                <FormControl sx={{
-                  width: { xs: '100%' }
-                }}>
-                  <OutlinedInput
-                    multiline
-                    minRows={3}
-                    disabled
-                    value={did}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => {
-                            window.navigator.clipboard.writeText(did);
-                          }}
-                        >
-                          <ContentCopyIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                  />
-                </FormControl>
-                <FormControlLabel
-                  control={
-                    <Checkbox checked={putDetailCheck} onChange={(e) => {
-                      setPutDetailCheck(e.target.checked)
-                    }} name="gilad" />
+                  <FormControl sx={{
+                    width: { xs: '100%' }
+                  }} variant="outlined">
+                    <InputLabel htmlFor="outlined-adornment-password">Video ID or Video URL *</InputLabel>
+                    <OutlinedInput
+                      id="outlined-adornment-password"
+                      label="Video ID or Video URL *"
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <Button onClick={pasteUrl}>paste</Button>
+                        </InputAdornment>
+                      }
+                      value={videoInputControl}
+                      onChange={(event) => {
+                        const value = event.target.value;
+                        setVideoInputControl(value);
+                        setInvalidVideo(false);
+                        setVideoPreviewUrl('');
+                      }}
+                      onPaste={pasteUrl}
+                    />
+                  </FormControl>
+                  {videoPreviewUrl ?
+                    <VideoPreview url={videoPreviewUrl} /> :
+                    <>
+                      {invalidVideo ?
+                        <Typography component="h3" sx={{
+                          fontSize: 13,
+                          color: 'error.main',
+                          fontWeight: 600
+                        }}>Invalid video</Typography> : <></>
+                      }
+                    </>
                   }
-                  label="I have put information above in my video description"
-                />
+                  <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    marginTop: 1
+                  }}>
+                    <Button variant="contained" disabled={!videoInputControl || invalidVideo} onClick={() => {
+                      if (!videoPreviewUrl) {
+                        validateValue(videoInputControl);
+                        return;
+                      }
+                      setStep('creating_identify');
+                      getDID();
+                    }} sx={{
+                      height: 40,
+                      width: 180
+                    }}>Next</Button>
+                  </Box>
+                </Box>
+              </> : <></>
+            }
+            {step === 'creating_identify' ?
+              <Box sx={{
+                alignItems: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2
+              }}>
+                <Typography component="h3" sx={{
+                  fontSize: 20,
+                  fontWeight: 600
+                }}>Creating your credentials...</Typography>
+                <CircularProgress size={65} color="success" />
+              </Box> : <></>
+            }
+            {step === 'copy_detail' ?
+              <>
+                <Typography component="h3" sx={{
+                  fontSize: 20,
+                  fontWeight: 600
+                }}>Identify credentials</Typography>
+                <Typography component="h3" sx={{
+                  fontSize: 13,
+                  fontWeight: 600
+                }}>Put this into your video description and then click next</Typography>
+                <Box component="form" sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 1.5,
+                  width: '100%'
+                }}>
+                  <FormControl sx={{
+                    width: { xs: '100%' }
+                  }}>
+                    <OutlinedInput
+                      multiline
+                      minRows={3}
+                      disabled
+                      value={did}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => {
+                              window.navigator.clipboard.writeText(did);
+                              setSnackbar({
+                                isOpen: true,
+                                timeOut: 5000,
+                                type: 'success',
+                                message: 'Copied to clipboard'
+                              });
+                            }}
+                          >
+                            <ContentCopyIcon />
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                    />
+                  </FormControl>
+                  <FormControlLabel
+                    control={
+                      <Checkbox checked={putDetailCheck} onChange={(e) => {
+                        setPutDetailCheck(e.target.checked)
+                      }} name="gilad" />
+                    }
+                    label="I have put information above in my video description"
+                  />
+                  <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    marginTop: 1
+                  }}>
+                    <Button variant="contained" disabled={!videoInputControl || !putDetailCheck} onClick={() => {
+                      setStep('send_request');
+                    }} sx={{
+                      height: 40,
+                      width: 180
+                    }}>Next</Button>
+                  </Box>
+                </Box>
+              </> : <></>
+            }
+            {step === 'send_request' ?
+              <>
+                <Typography component="h3" sx={{
+                  fontSize: 20,
+                  fontWeight: 600
+                }}>Start certify your video</Typography>
+                <VideoPreview url={videoPreviewUrl} />
                 <Box sx={{
                   display: 'flex',
                   justifyContent: 'center',
                   marginTop: 1
                 }}>
-                  <Button variant="contained" disabled={!videoInputControl || !putDetailCheck} onClick={() => {
-                    setStep('send_request');
+                  <Button variant="contained" disabled={!videoInputControl} onClick={() => {
+                    sendRequest();
+                    setStep('completing');
                   }} sx={{
                     height: 40,
                     width: 180
-                  }}>Next</Button>
+                  }}>Start Certify</Button>
                 </Box>
-              </Box>
-            </> : <></>
-          }
-          {step === 'send_request' ?
-            <>
-              <Typography component="h3" sx={{
-                fontSize: 20,
-                fontWeight: 600
-              }}>Start certify your video</Typography>
-              <VideoPreview url={videoPreviewUrl} />
+              </> : <></>
+            }
+            {step === 'completing' ?
               <Box sx={{
+                alignItems: 'center',
                 display: 'flex',
-                justifyContent: 'center',
-                marginTop: 1
+                flexDirection: 'column',
+                gap: 2
               }}>
-                <Button variant="contained" disabled={!videoInputControl} onClick={() => {
-                  sendRequest();
-                  setStep('completing');
-                }} sx={{
+                <Typography component="h3" sx={{
+                  fontSize: 20,
+                  fontWeight: 600
+                }}>Certifying your video...</Typography>
+                <CircularProgress size={65} color="success" />
+              </Box> : <></>
+            }
+            {step === 'completed' ?
+              <Box sx={{
+                alignItems: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2
+              }}>
+                <CheckCircleIcon color="success" sx={{
+                  fontSize: 48
+                }} />
+                <Typography component="h3" sx={{
+                  fontSize: 20,
+                  fontWeight: 600
+                }}>Successfully</Typography>
+                <Typography sx={{
+                  fontSize: 16,
+                  textAlign: 'center'
+                }}>Your video has been attested with your credentials and click <Link href={`https://mumbai.polygonscan.com/tx/${txHash}`} underline="hover">here</Link> to view your verified credentials</Typography>
+                <Button variant="contained" onClick={() => setStep('fill_id')} sx={{
                   height: 40,
                   width: 180
-                }}>Start Certify</Button>
-              </Box>
-            </> : <></>
-          }
-          {step === 'completing' ?
-            <Box sx={{
-              alignItems: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2
-            }}>
-              <Typography component="h3" sx={{
-                fontSize: 20,
-                fontWeight: 600
-              }}>Certifying your video...</Typography>
-              <CircularProgress size={65} color="success" />
-            </Box> : <></>
-          }
-          {step === 'completed' ?
-            <Box sx={{
-              alignItems: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2
-            }}>
-              <CheckCircleIcon color="success" sx={{
-                fontSize: 48
-              }} />
-              <Typography component="h3" sx={{
-                fontSize: 20,
-                fontWeight: 600
-              }}>Successfully</Typography>
-              <Typography sx={{
-                fontSize: 16,
-                textAlign: 'center'
-              }}>Your video has been attested with your credentials and click <Link href={`https://mumbai.polygonscan.com/tx/${txHash}`} underline="hover">here</Link> to view your verified credentials</Typography>
-              <Button variant="contained" onClick={() => setStep('fill_id')} sx={{
-                height: 40,
-                width: 180
-              }}>OK</Button>
-            </Box> : <></>
-          }
-        </>
-      }
-    </Box>
+                }}>OK</Button>
+              </Box> : <></>
+            }
+            {step === 'failed' ?
+              <Box sx={{
+                alignItems: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2
+              }}>
+                <ErrorOutlineIcon color="error" sx={{
+                  fontSize: 48
+                }} />
+                <Typography component="h3" sx={{
+                  fontSize: 20,
+                  fontWeight: 600
+                }}>Failed</Typography>
+                <Button variant="contained" onClick={() => setStep('fill_id')} sx={{
+                  height: 40,
+                  width: 180
+                }}>OK</Button>
+              </Box> : <></>
+            }
+          </>
+        }
+      </Box>
+
+      <SnackbarMessage snackbar={snackbar} setSnackbar={setSnackbar} />
+    </>
   )
 }
 export default Certify;

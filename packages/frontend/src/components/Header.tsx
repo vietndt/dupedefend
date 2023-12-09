@@ -3,6 +3,9 @@ import { Link, useLocation } from "react-router-dom";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Typography } from "@mui/material";
 import LoginIcon from '@mui/icons-material/Login';
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { ISnackbarConfig } from "../models/Snackbar";
+import SnackbarMessage from "./Snackbar";
 
 const Header = (props: {
   loggedIn: boolean,
@@ -10,13 +13,16 @@ const Header = (props: {
 }) => {
   const location = useLocation();
   const [dialog, setDialog] = useState<boolean>(false);
+  const [snackbar, setSnackbar] = useState<ISnackbarConfig>({
+    isOpen: false
+  } as any);
 
   return (
     <>
       <Box sx={{
         alignItems: 'center',
         display: 'flex',
-        height: 70,
+        height: 100,
         justifyContent: 'space-between',
         left: 0,
         padding: { xs: '0 16px', sm: '0 32px', md: '0 50px' },
@@ -27,12 +33,12 @@ const Header = (props: {
         <Box component={Link} to="/" sx={{
           alignItems: 'center',
           display: 'flex',
-          height: 65,
+          height: 90,
           justifyContent: 'center',
           overflow: 'hidden',
-          width: 65
+          width: 90
         }}>
-          <img src="/logo.png" alt="" width={110} />
+          <img src="/logo.png" alt="" width={140} />
         </Box>
         {location.pathname.indexOf('certify') !== -1 ?
           <>
@@ -59,50 +65,104 @@ const Header = (props: {
       }} open={dialog}>
         <DialogTitle>User info</DialogTitle>
         <DialogContent>
-          <Box>
+          <Box sx={{
+            alignItems: 'center',
+            display: 'flex'
+          }}>
             <Typography sx={{
               color: '#929292',
               fontSize: 14,
               fontWeight: 800,
-              textDecoration: 'none'
+              textDecoration: 'none',
+              width: 80
             }}>Wallet:</Typography>
             <Typography sx={{
               color: '#000000',
               fontSize: 14,
               fontWeight: 800,
               textDecoration: 'none',
+              width: '100%',
               wordBreak: 'break-all'
             }}>{props.userInfo?.address}</Typography>
+            <IconButton
+              onClick={() => {
+                window.navigator.clipboard.writeText(props.userInfo?.address);
+                setSnackbar({
+                  isOpen: true,
+                  timeOut: 5000,
+                  type: 'success',
+                  message: 'Copied to clipboard'
+                });
+              }}
+            >
+              <ContentCopyIcon />
+            </IconButton>
           </Box>
-          <Box>
+          <Box sx={{
+            alignItems: 'center',
+            display: 'flex'
+          }}>
             <Typography sx={{
               color: '#929292',
               fontSize: 14,
               fontWeight: 800,
-              textDecoration: 'none'
+              textDecoration: 'none',
+              width: 80
             }}>User Id:</Typography>
             <Typography sx={{
               color: '#000000',
               fontSize: 14,
               fontWeight: 800,
               textDecoration: 'none',
+              width: '100%',
               wordBreak: 'break-all'
             }}>{props.userInfo?.userId}</Typography>
+            <IconButton
+              onClick={() => {
+                window.navigator.clipboard.writeText(props.userInfo?.userId);
+                setSnackbar({
+                  isOpen: true,
+                  timeOut: 5000,
+                  type: 'success',
+                  message: 'Copied to clipboard'
+                });
+              }}
+            >
+              <ContentCopyIcon />
+            </IconButton>
           </Box>
-          <Box>
+          <Box sx={{
+            alignItems: 'center',
+            display: 'flex'
+          }}>
             <Typography sx={{
               color: '#929292',
               fontSize: 14,
               fontWeight: 800,
-              textDecoration: 'none'
+              textDecoration: 'none',
+              width: 80
             }}>DID:</Typography>
             <Typography sx={{
               color: '#000000',
               fontSize: 14,
               fontWeight: 800,
               textDecoration: 'none',
+              width: '100%',
               wordBreak: 'break-all'
             }}>{props.userInfo?.did}</Typography>
+            <IconButton
+              onClick={() => {
+                window.navigator.clipboard.writeText(props.userInfo?.did);
+                setSnackbar({
+                  isOpen: true,
+                  timeOut: 5000,
+                  type: 'success',
+                  message: 'Copied to clipboard'
+                });
+              }}
+            >
+              <ContentCopyIcon />
+            </IconButton>
           </Box>
         </DialogContent>
         <DialogActions sx={{
@@ -115,6 +175,8 @@ const Header = (props: {
           }}>Close</Button>
         </DialogActions>
       </Dialog>
+
+      <SnackbarMessage snackbar={snackbar} setSnackbar={setSnackbar} />
     </>
   )
 }

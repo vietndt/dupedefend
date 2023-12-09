@@ -16,21 +16,27 @@ contract SocialMediaVerifierTest is PRBTest, StdCheats {
     /// @dev A function invoked before each test case is run.
     function setUp() public virtual {
         // Instantiate the contract-under-test.
+        verifier = new SocialMediaVerifier(0x6E2dc0F9DB014aE19888F539E59285D2Ea04244C);
+
         // verifier = SocialMediaVerifier(0xbB26460Bd58AB5EA3917976188fF1260cDA21197);
     }
     
     /// @dev Basic test. Run it with `forge test -vvv` to see the console log.
-    // function test_Existence() external {
-    //     // console2.log("Test Requestor Existence");
-    //     // bytes32 requestID = 0xd78d1f00b277714e1592ad5075dee021130f3ca6aa9247377fa60a68cf8ac1ed;
-    //     // address requestor = verifier.requestToUser(requestID);
-    //     // console2.log("requestor", requestor);
-    //     // assert(requestor != address(0));
-    //     bytes memory response = hex"307832396435616231323832656536306439624533353244363235613635423466303933396134366131";
-    //     (address requestorFromResponse, uint256 channelID) =  extractAddressAndChannel(response);        
-    //     console2.log("requestorFromResponse", requestorFromResponse);
-    //     console2.log("channelID", channelID);
-    // }
+    function test_Existence() external {
+        // console2.log("Test Requestor Existence");
+        // bytes32 requestID = 0xd78d1f00b277714e1592ad5075dee021130f3ca6aa9247377fa60a68cf8ac1ed;
+        // address requestor = verifier.requestToUser(requestID);
+        // console2.log("requestor", requestor);
+        // assert(requestor != address(0));
+        bytes[] memory testData = new bytes[](1);
+        testData[0] = abi.encodePacked("test");
+        bytes32 requestId;
+        bytes memory requestData = abi.encode(requestId);
+        requestId = verifier.sendRequest("test", requestData, 1, 1, 13313, "test", testData, 123, 313, bytes32("t"));
+        verifier.setIssuerSimpleAddress(address(0x6Ca5dD637e40f7187Bfb0326E7c8C4030452Ef87));
+        verifier.handleOracleFulfillment(requestId, new bytes(1),  new bytes(0));
+        
+    }
 
 }
 

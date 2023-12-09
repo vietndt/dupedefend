@@ -6,7 +6,7 @@ envvar.config();
 import functionsConsumerAbi from './abi/functionsClient.json';
 import { youtubeFunctionString } from './functions/youtube';
 
-const consumerAddress = "0xbB26460Bd58AB5EA3917976188fF1260cDA21197";
+const consumerAddress = "0x7e757864619fa7bEE692daA8b2441fa1e431A3BF";
 const subscriptionId = 846; // REPLACE this with your subscription ID
 
 // hardcoded for Polygon Mumbai
@@ -155,7 +155,8 @@ const makeRequest = async (channelId: string, channelOwnerWalletAddress: string)
       "0x", // user hosted secrets - encryptedSecretsUrls - empty in this example
       slotIdNumber, // slot ID of the encrypted secrets
       donHostedSecretsVersion, // version of the encrypted secrets
-      args,
+      24308703216449665528637752374872361740983978940004854943937687158795473409n,
+      channelId,
       [], // bytesArgs - arguments can be encoded off-chain to bytes.
       subscriptionId,
       gasLimit,

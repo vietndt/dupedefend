@@ -1,7 +1,7 @@
 ## Introduction
 
 <div style="text-align:center;">
-    <img src="./constellation.png" alt="Alt Text" width="65%">
+    <img src="./FlowDefend.png" alt="Alt Text" width="65%">
 </div>
 
 

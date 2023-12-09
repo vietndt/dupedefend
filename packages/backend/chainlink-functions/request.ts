@@ -10,7 +10,7 @@ const consumerAddress = "0xE54C1690Ee523c827C97376d42cd35BeA01de226";
 const subscriptionId = 846; // REPLACE this with your subscription ID
 
 // hardcoded for Polygon Mumbai
-const makeRequest = async (channelId: string, channelOwnerWalletAddress: string): Promise<any> => {
+const makeRequest = async (videoOrChannelId: string, ownerWalletAddress: string, type: string): Promise<any> => {
   return new Promise(async (resolve, rej) => {
     // hardcoded for Polygon Mumbai
     const routerAddress = "0x6E2dc0F9DB014aE19888F539E59285D2Ea04244C";
@@ -24,9 +24,7 @@ const makeRequest = async (channelId: string, channelOwnerWalletAddress: string)
     // Initialize functions settings
     const source = youtubeFunctionString;
   
-    const args = [
-      channelId
-      , channelOwnerWalletAddress];
+    const args = [videoOrChannelId, ownerWalletAddress, type];
     const secrets: any = { apiKey: process.env.YOUTUBE_API_KEY };
     const slotIdNumber = 0; // slot ID where to upload the secrets
     const expirationTimeMinutes = 15; // expiration time in minutes of the secrets

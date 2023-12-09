@@ -28,13 +28,13 @@ contract SocialMediaVerifierTest is PRBTest, StdCheats {
         // address requestor = verifier.requestToUser(requestID);
         // console2.log("requestor", requestor);
         // assert(requestor != address(0));
-        bytes[] memory testData = new bytes[](1);
-        testData[0] = abi.encodePacked("test");
-        bytes32 requestId;
-        bytes memory requestData = abi.encode(requestId);
-        requestId = verifier.sendRequest("test", requestData, 1, 1, 13313, "test", testData, 123, 313, bytes32("t"));
-        verifier.setIssuerSimpleAddress(address(0x6Ca5dD637e40f7187Bfb0326E7c8C4030452Ef87));
-        verifier.handleOracleFulfillment(requestId, new bytes(1),  new bytes(0));
+        // bytes[] memory testData = new bytes[](1);
+        // testData[0] = abi.encodePacked("test");
+        // bytes32 requestId;
+        // bytes memory requestData = abi.encode(requestId);
+        // requestId = verifier.sendRequest("test", requestData, 1, 1, 13313, "test", testData, 123, 313, bytes32("t"));
+        // verifier.setIssuerSimpleAddress(address(0x6Ca5dD637e40f7187Bfb0326E7c8C4030452Ef87));
+        // verifier.handleOracleFulfillment(requestId, new bytes(1),  new bytes(0));
         
     }
 

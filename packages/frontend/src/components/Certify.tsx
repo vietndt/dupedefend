@@ -101,6 +101,9 @@ const Certify = (props: {
     const privateKey = await rpc.getPrivateKey();
     const res = await identityCreation(privateKey);
     const userId = await DID.idFromDID(res.did);
+
+    // step2 : donHostedSecretsVersion get from API (because youtube secret api key)
+    // step3 : make smart contract as below
     //not sure where this contract call goes, but we need to add this
     // await functionsConsumer.methods.sendRequest(
     //   source, // source

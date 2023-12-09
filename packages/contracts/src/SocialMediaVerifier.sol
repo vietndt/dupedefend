@@ -37,7 +37,7 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
      * @param donHostedSecretsSlotID Don hosted secrets slotId
      * @param donHostedSecretsVersion Don hosted secrets version
      * @param userId User ID this is the DID of the user using DID.getId
-     * @param channelId Channel ID this is the socialmedia/youtube video or channel id of the user
+     * @param args args ID this is the socialmedia/youtube video or channel id of the user and the address of the user
      * @param bytesArgs Array of bytes arguments, represented as hex strings
      * @param subscriptionId Billing ID
      */
@@ -47,7 +47,7 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
         uint8 donHostedSecretsSlotID,
         uint64 donHostedSecretsVersion,
         uint256 userId,
-        string memory channelId,
+        string[] memory args,
         bytes[] memory bytesArgs,
         uint64 subscriptionId,
         uint32 gasLimit,
@@ -63,6 +63,7 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
                 donHostedSecretsVersion
             );
         }
+        if (args.length > 0) req.setArgs(args);
         if (bytesArgs.length > 0) req.setBytesArgs(bytesArgs);
         s_lastRequestId = _sendRequest(
             req.encodeCBOR(),
@@ -70,7 +71,7 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
             gasLimit,
             donID
         );
-        requestToUserArgs[s_lastRequestId] = Request(userId, msg.sender, channelId);
+        requestToUserArgs[s_lastRequestId] = Request(userId, msg.sender, args[0]);
         return s_lastRequestId;
     }
 

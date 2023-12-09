@@ -6,7 +6,7 @@ envvar.config();
 import functionsConsumerAbi from './abi/functionsClient.json';
 import { youtubeFunctionString } from './functions/youtube';
 
-const consumerAddress = "0x7e757864619fa7bEE692daA8b2441fa1e431A3BF";
+const consumerAddress = "0xE54C1690Ee523c827C97376d42cd35BeA01de226";
 const subscriptionId = 846; // REPLACE this with your subscription ID
 
 // hardcoded for Polygon Mumbai
@@ -142,7 +142,6 @@ const makeRequest = async (channelId: string, channelOwnerWalletAddress: string)
     // const donHostedSecretsVersion = 1701864046 // found this after 1 manual try
 
       console.log("donHostedSecretsVersion", donHostedSecretsVersion)
-
       const functionsConsumer = new ethers.Contract(
       consumerAddress,
       functionsConsumerAbi,
@@ -156,13 +155,14 @@ const makeRequest = async (channelId: string, channelOwnerWalletAddress: string)
       slotIdNumber, // slot ID of the encrypted secrets
       donHostedSecretsVersion, // version of the encrypted secrets
       24308703216449665528637752374872361740983978940004854943937687158795473409n,
-      channelId,
+      args,
       [], // bytesArgs - arguments can be encoded off-chain to bytes.
       subscriptionId,
       gasLimit,
       ethers.utils.formatBytes32String(donId) // jobId is bytes32 representation of donId
     );
   
+    //return resolve(donHostedSecretsVersion);
   
     // Log transaction details
     console.log(

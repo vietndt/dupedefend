@@ -97,9 +97,9 @@ contract IssuerSimple is IdentityBase, OwnableUpgradeable {
             expirationDate: 3183110232,
             // data
             merklizedRoot: 0,
-            indexDataSlotA: convertAddressToUint256(_requestor),
-            indexDataSlotB: stringToUint256(_videoOrChannelId),
-            valueDataSlotA: 0,
+            indexDataSlotA: convertAddressToUint256(_requestor), // we are saying that in the tree that there can ever be only 1 of 1 address -> 1 video UUID
+            indexDataSlotB: stringToUint256(_videoOrChannelId), // A+ B is always unique
+            valueDataSlotA: 0, //can be repeated
             valueDataSlotB: 0
         });
         uint256[8] memory claim = ClaimBuilder.build(claimData);

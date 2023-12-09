@@ -102,21 +102,21 @@ const Certify = (props: {
     const res = await identityCreation(privateKey);
     const userId = await DID.idFromDID(res.did);
 
-    // step2 : donHostedSecretsVersion get from API (because youtube secret api key)
-    // step3 : make smart contract as below
-    //not sure where this contract call goes, but we need to add this
-    // await functionsConsumer.methods.sendRequest(
-    //   source, // source
-    //   "0x", // user hosted secrets - encryptedSecretsUrls - empty in this example
-    //   slotIdNumber, // slot ID of the encrypted secrets
-    //   donHostedSecretsVersion, // version of the encrypted secrets -> this we need to create api to call from request.ts, will do 
-    // uint256 userId,
-    // string memory channelId,
-    //   [], // bytesArgs - arguments can be encoded off-chain to bytes.
-    //   subscriptionId,
-    //   gasLimit,
-    //   ethers.utils.formatBytes32String(donId) // jobId is bytes32 representation of donId
-    // ).send({from: account});
+      // step2 : donHostedSecretsVersion get from API (because youtube secret api key)
+      // step3 : make smart contract as below
+      //not sure where this contract call goes, but we need to add this
+      // await functionsConsumer.methods.sendRequest(
+      //   source, // source
+      //   "0x", // user hosted secrets - encryptedSecretsUrls - empty in this example
+      //   slotIdNumber, // slot ID of the encrypted secrets
+      //   donHostedSecretsVersion, // version of the encrypted secrets -> this we need to create api to call from request.ts, will do 
+      // uint256 userId,
+      // string memory channelId,
+      //   [], // bytesArgs - arguments can be encoded off-chain to bytes.
+      //   subscriptionId,
+      //   gasLimit,
+      //   ethers.utils.formatBytes32String(donId) // jobId is bytes32 representation of donId
+      // ).send({from: account});
 
     console.log("userId", userId);
     setDid(`My wallet: ${address}, My Polygon DID: ${res.did.string()}`)

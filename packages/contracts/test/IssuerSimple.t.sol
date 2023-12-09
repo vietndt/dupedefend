@@ -10,26 +10,28 @@ import { IssuerSimple } from "../src/IssuerSimple.sol";
 /// https://book.getfoundry.sh/forge/writing-tests
 contract IssuerSimpleTest is PRBTest, StdCheats {
     IssuerSimple private issuer;
-
     /// @dev A function invoked before each test case is run.
     function setUp() public virtual {
         // Instantiate the contract-under-test.
-         issuer = new IssuerSimple();
-         issuer.initialize(0x134B1BE34911E39A8397ec6289782989729807a4);
+        //  issuer = new IssuerSimple();
+        //  issuer.initialize(0x134B1BE34911E39A8397ec6289782989729807a4);
+        issuer = IssuerSimple(0x454E5108cEE33c743D8DE8eF92aeb749256AbC3D);
     }
     
     // /// @dev Basic test. Run it with `forge test -vvv` to see the console log.
-    // function test_Issuance() external {
-    //     console2.log("Test Issuance");
-    //     uint256 _channelId = 1;
-    //     uint bal = address(0x29d5ab1282ee60d9bE352D625a65B4f0939a46a1).balance;
-    //     console2.log("Balance", bal);
-    //     address requestor = address(0x29d5ab1282ee60d9bE352D625a65B4f0939a46a1);
-    //     vm.prank(requestor);
-    //     issuer.issueCredential(_channelId, requestor);
-    //     console2.log("Issued");
+    function test_Issuance() external {
+        console2.log("Test Issuance");
+        // uint256 _channelId = 1;
+        // uint bal = address(0x29d5ab1282ee60d9bE352D625a65B4f0939a46a1).balance;
+        // console2.log("Balance", bal);
+        // address requestor = address(0x29d5ab1282ee60d9bE352D625a65B4f0939a46a1);
+        uint256 _userId = 24308703216449665528637752374872361740983978940004854943937687158795473409;
+        string memory _videoOrChannelId = "UC4nRmZan1X84wnWiW297rTg";
+        
+        IssuerSimple.ClaimInfo memory cf = issuer.getUserClaim(_userId, _videoOrChannelId);
+        // console2.log(cf.claim);
 
-    // }
+    }
 }
 
 

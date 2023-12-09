@@ -5,20 +5,6 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "yarn workspace frontend start",
-    "build": "yarn workspace frontend build",
-    "build-be": "yarn workspace backend build",
-    "start-be": "yarn workspace backend dev"
-  },
-  "workspaces": {
-    "packages": [
-      "packages/*",
-      "frontend",
-      "backend"
-    ],
-    "nohoist": [
-      "**/frontend"
-    ]
   },
   "dependencies": {
   }

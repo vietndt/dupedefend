@@ -10,7 +10,7 @@ export default class EthereumRpc {
 
   async getChainId(): Promise<any> {
     try {
-      const ethersProvider = new ethers.BrowserProvider(this.provider);
+      const ethersProvider = new ethers.providers.Web3Provider(this.provider);
       const networkDetails = await ethersProvider.getNetwork();
       return networkDetails.chainId;
     } catch (error) {
@@ -18,9 +18,9 @@ export default class EthereumRpc {
     }
   }
 
-  async getAccounts(): Promise<any> {
+  async getAddress(): Promise<any> {
     try {
-      const ethersProvider = new ethers.BrowserProvider(this.provider);
+      const ethersProvider = new ethers.providers.Web3Provider(this.provider);
       const signer = await ethersProvider.getSigner();
       const address = signer.getAddress();
       return address;
@@ -31,10 +31,10 @@ export default class EthereumRpc {
 
   async getBalance(): Promise<string> {
     try {
-      const ethersProvider = new ethers.BrowserProvider(this.provider);
+      const ethersProvider = new ethers.providers.Web3Provider(this.provider);
       const signer = await ethersProvider.getSigner();
       const address = signer.getAddress();
-      const balance = ethers.formatEther(
+      const balance = ethers.utils.formatEther(
         await ethersProvider.getBalance(address)
       );
       return balance;
@@ -45,13 +45,13 @@ export default class EthereumRpc {
 
   async sendTransaction(destination: string, amount: string): Promise<any> {
     try {
-      const ethersProvider = new ethers.BrowserProvider(this.provider);
+      const ethersProvider = new ethers.providers.Web3Provider(this.provider);
       const signer = ethersProvider.getSigner();
       const tx = await (
         await signer
       ).sendTransaction({
         to: destination,
-        value: ethers.parseEther(amount),
+        value: ethers.utils.parseEther(amount),
         maxPriorityFeePerGas: "5000000000",
         maxFeePerGas: "6000000000000",
       });
@@ -64,7 +64,7 @@ export default class EthereumRpc {
 
   async signMessage(message: string) {
     try {
-      const ethersProvider = new ethers.BrowserProvider(this.provider);
+      const ethersProvider = new ethers.providers.Web3Provider(this.provider);
       const signer = ethersProvider.getSigner();
       const signedMessage = await (await signer).signMessage(message);
       return signedMessage;

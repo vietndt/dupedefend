@@ -94,7 +94,6 @@ const HomePage = () => {
           </ButtonBase>
         </Box>
       </Box>
-    
 
       <Box sx={{
         alignItems: 'center',

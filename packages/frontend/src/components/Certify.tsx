@@ -12,6 +12,11 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { identityCreation } from "../helpers/PolygonId";
 import VideoPreview from "./VideoPreview";
 import { DID } from '@iden3/js-iden3-core'
+import { ethers } from "ethers";
+import { getABI } from "../helpers/Contract";
+import { youtubeFunctionString } from "../functions/youtube";
+import { TransactionResponse } from "@ethersproject/providers";
+import { pollingTransaction } from "../helpers/Utilities";
 
 const Certify = (props: {
   setLoggedIn: Function
@@ -19,6 +24,7 @@ const Certify = (props: {
   const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null);
   const [provider, setProvider] = useState<any>();
   const [videoInputControl, setVideoInputControl] = useState<string>('');
+  const [videoOrChannelId, setVideoOrChannelId] = useState<string>('');
   const [status, setStatus] = useState<ADAPTER_STATUS_TYPE>();
   const [step, setStep] = useState<'fill_id' | 'creating_identify' | 'copy_detail' | 'send_request' | 'completing' | 'completed'>();
   const [did, setDid] = useState<string>('');
@@ -77,6 +83,7 @@ const Certify = (props: {
       props.setLoggedIn(web3auth.status === 'connected');
     }
     init();
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -97,10 +104,9 @@ const Certify = (props: {
 
   const getDID = async () => {
     const rpc = new RPC(provider);
-    const address = await rpc.getAccounts();
+    const address = await rpc.getAddress();
     const privateKey = await rpc.getPrivateKey();
     const res = await identityCreation(privateKey);
-    const userId = await DID.idFromDID(res.did);
 
       // step2 : donHostedSecretsVersion get from API (because youtube secret api key)
       // step3 : make smart contract as below
@@ -117,8 +123,8 @@ const Certify = (props: {
       //   gasLimit,
       //   ethers.utils.formatBytes32String(donId) // jobId is bytes32 representation of donId
       // ).send({from: account});
+    
 
-    console.log("userId", userId);
     setDid(`My wallet: ${address}, My Polygon DID: ${res.did.string()}`)
     setStep('copy_detail');
   }
@@ -161,6 +167,7 @@ const Certify = (props: {
       const check = await checkVideo(id);
       if (check) {
         setVideoPreviewUrl(`https://www.youtube.com/embed/${id}`);
+        setVideoOrChannelId(id);
         setInvalidVideo(false);
       } else {
         setInvalidVideo(true);
@@ -178,6 +185,39 @@ const Certify = (props: {
       return false;
     } catch (err) {
       return false;
+    }
+  }
+
+  const sendRequest = async () => {
+    const rpc = new RPC(provider);
+    const address = await rpc.getAddress();
+    const privateKey = await rpc.getPrivateKey();
+    const res = await identityCreation(privateKey);
+    const userId = await DID.idFromDID(res.did);
+    const pvd = new ethers.providers.JsonRpcProvider('https://polygon-mumbai.g.alchemy.com/v2/skcObGFfdsDGaGOWAmN7O1aNKyJkjXW1');
+    const wallet = new ethers.Wallet(privateKey, pvd);
+    const abi = getABI('SocialMediaVerifier');
+    const contract = new ethers.Contract('0xE54C1690Ee523c827C97376d42cd35BeA01de226', abi, wallet);
+    const response: TransactionResponse = await contract.sendRequest(
+      youtubeFunctionString, // source
+      '0x', // encryptedSecretsUrls
+      0, // donHostedSecretsSlotID
+      1702112931, // donHostedSecretsVersion
+      userId.bigInt(), // userId
+      [videoOrChannelId, address, 'video'], // args
+      [], // bytesArgs
+      '846', // subscriptionId
+      300000, // gasLimit
+      '0x66756e2d706f6c79676f6e2d6d756d6261692d31000000000000000000000000', // donID
+    );
+    pollingTransaction(response.hash, sendRequestCompleted, pvd);
+  }
+
+  const sendRequestCompleted = (status: number) => {
+    if (status === 1) {
+      setStep('completed');
+    } else if (status === 0) {
+
     }
   }
 
@@ -362,10 +402,8 @@ const Certify = (props: {
                 marginTop: 1
               }}>
                 <Button variant="contained" disabled={!videoInputControl} onClick={() => {
+                  sendRequest();
                   setStep('completing');
-                  setTimeout(() => {
-                    setStep('completed');
-                  }, 3000)
                 }} sx={{
                   height: 40,
                   width: 180

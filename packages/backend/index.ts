@@ -13,12 +13,12 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.post('/chainlink-functions/youtube', async (req: Request, res: Response) => {
-  const { channelId, channelOwnerWalletAddress } = req.body;
-  if (!channelId || !channelOwnerWalletAddress) {
-    return res.status(400).json({ message: 'channelId and channelOwnerWalletAddress are required' });
+  const { videoOrChannelId, ownerWalletAddress, type } = req.body;
+  if (!videoOrChannelId || !ownerWalletAddress || !type) {
+    return res.status(400).json({ message: 'videoOrChannelId and ownerWalletAddress and type are required' });
   }
   try {
-    const result = await makeRequestMumbai(channelId, channelOwnerWalletAddress);
+    const result = await makeRequestMumbai(videoOrChannelId, ownerWalletAddress, type);
     return res.json(result);
   } catch (error) {
     console.log(error)

@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@iden3/eslint-config": "https://github.com/iden3/eslint-config",
+    "@types/express": "^4.17.21",
     "concurrently": "^8.0.1",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",

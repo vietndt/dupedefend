@@ -44,3 +44,5 @@ circuits_data
 circuits
 latest.zip
 dist
+
+.env.enc

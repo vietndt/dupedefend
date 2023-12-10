@@ -262,9 +262,8 @@ const Certify = (props: {
       })
     });
     const resdonHostedSecretsVersion = await donHostedSecretsVersion.json();
-    const uoCallData = encodeFunctionData({
-      abi: abi,
-      
+    let encodeFunctionDataParams = {
+      abi: abi,      
       args: [
       youtubeFunctionString, // source
       '0x', // encryptedSecretsUrls
@@ -278,11 +277,14 @@ const Certify = (props: {
       '0x66756e2d706f6c79676f6e2d6d756d6261692d31000000000000000000000000'
     ],
     functionName: "sendRequest"
-    });
+    };
+    const iface = new ethers.utils.Interface(abi);
+
+    const uoCallData =iface.encodeFunctionData("sendRequest", encodeFunctionDataParams.args);
     
     const uo = await AAprovider.sendUserOperation({
       target: "0xE54C1690Ee523c827C97376d42cd35BeA01de226",
-      data: uoCallData,
+      data: `0x${uoCallData.slice(2)}`,
     });
 
     const txHash = await AAprovider.waitForUserOperationTransaction(uo.hash);

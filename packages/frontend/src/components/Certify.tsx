@@ -150,9 +150,21 @@ const Certify = (props: {
     const privateKey = await rpc.getPrivateKey();
      //create the Alchemy Light Account and get the DID AA Change
      const owner = LocalAccountSigner.privateKeyToAccountSigner(`0x${privateKey}`);
-     const AAAddress = await owner.getAddress();
+     const AAprovider = new AlchemyProvider({
+      // get your Alchemy API key at https://dashboard.alchemy.com
+      apiKey: "qBnsyAvjpsxGAL0J_EeUtT9ilVVuNlc2",
+      chain,
+    }).connect(
+      (rpcClient) =>
+        new LightSmartContractAccount({
+          rpcClient,
+          owner,
+          chain,
+          factoryAddress: getDefaultLightAccountFactoryAddress(chain),
+        })
+    );
+     const AAAddress = await AAprovider.getAddress();
     const res = await identityCreation(privateKey);
-
     setDid(`My wallet: ${AAAddress}, My Polygon DID: ${res.did.string()}`)
     setStep('copy_detail');
   }
@@ -246,7 +258,7 @@ const Certify = (props: {
      //then set that as the provider for gasless transactions
      setProvider(AAprovider);
     const userId = await DID.idFromDID(res.did);
-    // const pvd = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_ID}`);
+    const pvd = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_ID}`);
     // const wallet = new ethers.Wallet(privateKey, pvd);
     const abi = getABI('SocialMediaVerifier');
 
@@ -289,22 +301,8 @@ const Certify = (props: {
 
     const txHash = await AAprovider.waitForUserOperationTransaction(uo.hash);
     console.log("txHash", txHash);
-    // const contract = new ethers.Contract('0xE54C1690Ee523c827C97376d42cd35BeA01de226', abi, AAprovider);
-    // const response: TransactionResponse = await contract.sendRequest(
-    //   youtubeFunctionString, // source
-    //   '0x', // encryptedSecretsUrls
-    //   0, // donHostedSecretsSlotID
-    //   donHostedSecretsVersion.json(), // donHostedSecretsVersion
-    //   userId.bigInt(), // userId
-    //   [videoOrChannelId, address, 'video'], // args
-    //   [], // bytesArgs
-    //   '846', // subscriptionId
-    //   300000, // gasLimit
-    //   '0x66756e2d706f6c79676f6e2d6d756d6261692d31000000000000000000000000', // donID
-    // );
-    // setTxHash(response.hash);
     setTxHash(txHash);
-    pollingTransaction(txHash, sendRequestCompleted, AAprovider);
+    pollingTransaction(txHash, sendRequestCompleted, pvd);
   }
 
   const sendRequestCompleted = (status: number) => {

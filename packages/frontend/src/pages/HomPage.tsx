@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, ButtonBase, Paper, Step, StepIconProps, StepLabel, Stepper, Typography, styled } from "@mui/material";
+import { Box, ButtonBase, Link, Paper, Step, StepIconProps, StepLabel, Stepper, Typography, styled } from "@mui/material";
 import AddModeratorOutlinedIcon from '@mui/icons-material/AddModeratorOutlined';
 import OndemandVideoOutlinedIcon from '@mui/icons-material/OndemandVideoOutlined';
 import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector';
@@ -60,7 +60,7 @@ const ColorlibStepIconRoot = styled('div')<{
   }),
 }));
 
-const  ColorlibStepIcon = (props: StepIconProps) => {
+const ColorlibStepIcon = (props: StepIconProps) => {
   const { active, completed, className } = props;
 
   const icons: { [index: string]: React.ReactElement } = {
@@ -112,7 +112,7 @@ const HomePage = () => {
       flexDirection: 'column',
       justifyContent: 'center',
       minHeight: '100vh',
-      padding: '50px 16px',
+      padding: '50px 0',
       width: '100%'
     }}>
       <Box sx={{
@@ -194,10 +194,10 @@ const HomePage = () => {
           </ButtonBase>
         </Box>
         <div className="spinner scroll-down">
-          <button className="animate" onClick={()=> {
-            (stepsRef.current as any)?.scrollIntoView({behavior: 'smooth'})
+          <button className="animate" onClick={() => {
+            (stepsRef.current as any)?.scrollIntoView({ behavior: 'smooth' })
           }}>steps</button>
-          </div>
+        </div>
       </Box>
 
       <Box component="div" ref={stepsRef} sx={{
@@ -230,40 +230,49 @@ const HomePage = () => {
             fontWeight: 600,
             textAlign: 'center'
           }}>Steps</Typography>
-          <Stepper alternativeLabel activeStep={4} connector={<ColorlibConnector />}>
-            {steps.map((step) => (
-              <Step key={step.label}>
-                <StepLabel StepIconComponent={ColorlibStepIcon} sx={{
-                  cursor: step.url ? 'pointer' : '',
-                  display: 'flex'
-                }} onClick={() => {
-                  if (step.url && step.url.indexOf('https') === -1) {
-                    navigate(step.url);
-                  } else if (step.url) {
-                    window.open(step.url, '_blank');
-                  }
-                }}>
-                  <Box sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                    gap: 1,
-                    justifyContent: 'center'
+          <Box sx={{
+            display: 'flex',
+            overflow: 'auto',
+            width: '100%'
+          }}>
+            <Stepper alternativeLabel activeStep={4} connector={<ColorlibConnector />} sx={{
+
+              minWidth: '900px',
+            }}>
+              {steps.map((step) => (
+                <Step key={step.label}>
+                  <StepLabel StepIconComponent={ColorlibStepIcon} sx={{
+                    cursor: step.url ? 'pointer' : '',
+                    display: 'flex'
+                  }} onClick={() => {
+                    if (step.url && step.url.indexOf('https') === -1) {
+                      navigate(step.url);
+                    } else if (step.url) {
+                      window.open(step.url, '_blank');
+                    }
                   }}>
-                  <Typography component="h3" sx={{
-                    fontSize: 16,
-                    fontWeight: 400,
-                    textAlign: 'center'
-                  }}>{step.label}</Typography>
-                  {step.url?
-                  <LaunchIcon sx={{
-                    fontSize: 18
-                  }}/> : <></>
-                  }
-                  </Box>
-                </StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+                    <Box sx={{
+                      alignItems: 'center',
+                      display: 'flex',
+                      gap: 1,
+                      justifyContent: 'center'
+                    }}>
+                      <Typography component="h3" sx={{
+                        fontSize: 16,
+                        fontWeight: 400,
+                        textAlign: 'center'
+                      }}>{step.label}</Typography>
+                      {step.url ?
+                        <LaunchIcon sx={{
+                          fontSize: 18
+                        }} /> : <></>
+                      }
+                    </Box>
+                  </StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </Box>
         </Box>
         <Box sx={{
           alignItems: 'center',
@@ -271,19 +280,21 @@ const HomePage = () => {
           boxShadow: '0 4px 4px #00000040',
           color: '#293862',
           display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          gap: { xs: 4, md: 0 },
           maxWidth: 1150,
           padding: 2,
           width: '100%'
         }}>
           <Box component="img" src="https://docs.chain.link/images/chainlink-functions/functions-playground.png" sx={{
-            width: '50%'
+            width: { xs: '100%', md: '50%' }
           }}></Box>
           <Box sx={{
             display: 'flex',
             flexDirection: 'column',
             gap: 3,
-            paddingLeft: 3,
-            width: '50%'
+            paddingLeft: { xs: 0, md: 3 },
+            width: { xs: '100%', md: '50%' }
           }}>
             <Typography component="h3" sx={{
               color: '#375bd2',
@@ -302,12 +313,14 @@ const HomePage = () => {
           boxShadow: '0 4px 4px #00000040',
           color: '#293862',
           display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          gap: { xs: 4, md: 0 },
           maxWidth: 1150,
           padding: 2,
           width: '100%'
         }}>
           <Box sx={{
-            width: '50%'
+            width: { xs: '100%', md: '50%' }
           }}>
             <VideoPreview url={'https://www.youtube.com/embed/i3exuUa65sE'} />
           </Box>
@@ -315,8 +328,8 @@ const HomePage = () => {
             display: 'flex',
             flexDirection: 'column',
             gap: 3,
-            paddingLeft: 3,
-            width: '50%'
+            paddingLeft: { xs: 0, md: 3 },
+            width: { xs: '100%', md: '50%' }
           }}>
             <Typography component="h3" sx={{
               color: '#9a60ff',
@@ -327,7 +340,7 @@ const HomePage = () => {
               fontSize: 18,
               fontWeight: 400
             }}>This platform uses polygon's iden3 framework to issue claims that you have created the video in your youtube description.
-              Read more about iden3 <a href="https://docs.iden3.io/">here </a>
+              Read more about iden3 <Link href="https://docs.iden3.io/" target="_blank">here </Link>
             </Typography>
           </Box>
         </Box>

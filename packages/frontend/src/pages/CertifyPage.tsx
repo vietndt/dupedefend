@@ -17,11 +17,17 @@ const CertifyPage = (props: {
       gap: 2,
       justifyContent: 'center',
       minHeight: 'calc(100vh - 35px)',
-      padding: '150px 16px 70px',
+      padding: { xs: '100px 16px 30px', md: '150px 16px 30px' },
       width: '100%'
     }}>
       <Certify setLoggedIn={props.setLoggedIn} setUserInfo={props.setUserInfo} />
-      <CertifyHistory loggedIn={props.loggedIn} userInfo={props.userInfo} />
+      <Box sx={{
+        display: 'flex',
+        overflow: 'auto',
+        width: '100%'
+      }}>
+        <CertifyHistory loggedIn={props.loggedIn} userInfo={props.userInfo} />
+      </Box>
     </Box>
   )
 }

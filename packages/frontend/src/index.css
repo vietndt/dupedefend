@@ -231,3 +231,9 @@ code {
   -o-animation: pulse 1.5s 0.5s infinite normal ease forwards;
   animation: pulse 1.5s 0.5s infinite normal ease forwards;
 }
+
+@media (max-width: 700px) {
+  .scroll-down {
+    display: none !important;
+  }
+}

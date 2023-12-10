@@ -22,7 +22,7 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
     address public issuerSimpleAddress;
     mapping(bytes32 => Request) public requestToUserArgs;
     
-    error UnexpectedRequestOr(address requestor);
+    error UnexpectedRequestOr(bytes response);
 
     event Response(bytes32 indexed requestId, bytes response, bytes err, bool successCallToIssuerSimple);
 
@@ -110,10 +110,10 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
         bytes memory response,
         bytes memory err
     ) internal override {
-
-        // if (requestToUserArgs[requestId] != requestor) {
-        //     revert UnexpectedRequestOr(requestor);
-        // }
+        (uint result) = abi.decode(response, (uint));
+        if (result <= 0) {
+            revert UnexpectedRequestOr(response);
+        }
 
         // Encode the function call, I will create a mapping between request id and user address
         // check if the response has address and it matches the user address

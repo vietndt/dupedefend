@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Skeleton } from '@mui/material';
 
 import moment from 'moment';
 import { ethers } from 'ethers';
@@ -19,7 +20,9 @@ const Date = (props: {
     }
   }, [props.blockNumber]);
   return (
-    <>{moment(date).format('DD-MM-yyyy, HH:mm')}</>
+    <>
+      {!date ? <Skeleton variant="rectangular" width={120} height={20} /> : <>{moment(date).format('DD-MM-yyyy, HH:mm')}</>}
+    </>
   )
 }
 export default Date;

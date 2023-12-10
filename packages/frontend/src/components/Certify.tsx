@@ -22,7 +22,7 @@ import { identityCreation } from "../helpers/PolygonId";
 import VideoPreview from "./VideoPreview";
 import { getABI } from "../helpers/Contract";
 import { youtubeFunctionString } from "../functions/youtube";
-import { pollingTransaction } from "../helpers/Utilities";
+import { errorHandler, pollingTransaction } from "../helpers/Utilities";
 import SnackbarMessage from "./Snackbar";
 import { ISnackbarConfig } from "../models/Snackbar";
 
@@ -155,6 +155,7 @@ const Certify = (props: {
       const check = await checkVideo(id);
       if (check) {
         setVideoPreviewUrl(`https://www.youtube.com/embed/${id}`);
+        setVideoOrChannelId(id);
         setInvalidVideo(false);
       } else {
         setInvalidVideo(true);
@@ -194,45 +195,50 @@ const Certify = (props: {
       }
       return false;
     } catch (err) {
+      errorHandler(err, setSnackbar);
       return false;
     }
   }
 
   const sendRequest = async () => {
-    const rpc = new RPC(provider);
-    const address = await rpc.getAddress();
-    const privateKey = await rpc.getPrivateKey();
-    const res = await identityCreation(privateKey);
-    const userId = await DID.idFromDID(res.did);
-    const pvd = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_ID}`);
-    const wallet = new ethers.Wallet(privateKey, pvd);
-    const abi = getABI('SocialMediaVerifier');
-    const donHostedSecretsVersion = await fetch(process.env.REACT_APP_API_URL as string, {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        videoOrChannelId: videoOrChannelId,
-        ownerWalletAddress: address,
-        type: 'video'
-      })
-    });
-    const contract = new ethers.Contract('0xE54C1690Ee523c827C97376d42cd35BeA01de226', abi, wallet);
-    const response: TransactionResponse = await contract.sendRequest(
-      youtubeFunctionString, // source
-      '0x', // encryptedSecretsUrls
-      0, // donHostedSecretsSlotID
-      donHostedSecretsVersion.json(), // donHostedSecretsVersion
-      userId.bigInt(), // userId
-      [videoOrChannelId, address, 'video'], // args
-      [], // bytesArgs
-      '846', // subscriptionId
-      300000, // gasLimit
-      '0x66756e2d706f6c79676f6e2d6d756d6261692d31000000000000000000000000', // donID
-    );
-    setTxHash(response.hash);
-    pollingTransaction(response.hash, sendRequestCompleted, pvd);
+    try {
+      const rpc = new RPC(provider);
+      const address = await rpc.getAddress();
+      const privateKey = await rpc.getPrivateKey();
+      const res = await identityCreation(privateKey);
+      const userId = await DID.idFromDID(res.did);
+      const pvd = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_ID}`);
+      const wallet = new ethers.Wallet(privateKey, pvd);
+      const abi = getABI('SocialMediaVerifier');
+      const donHostedSecretsVersion = await fetch(process.env.REACT_APP_API_URL as string, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          videoOrChannelId: videoOrChannelId,
+          ownerWalletAddress: address,
+          type: 'video'
+        })
+      });
+      const contract = new ethers.Contract('0xE54C1690Ee523c827C97376d42cd35BeA01de226', abi, wallet);
+      const response: TransactionResponse = await contract.sendRequest(
+        youtubeFunctionString, // source
+        '0x', // encryptedSecretsUrls
+        0, // donHostedSecretsSlotID
+        donHostedSecretsVersion.json(), // donHostedSecretsVersion
+        userId.bigInt(), // userId
+        [videoOrChannelId, address, 'video'], // args
+        [], // bytesArgs
+        '846', // subscriptionId
+        300000, // gasLimit
+        '0x66756e2d706f6c79676f6e2d6d756d6261692d31000000000000000000000000', // donID
+      );
+      setTxHash(response.hash);
+      pollingTransaction(response.hash, sendRequestCompleted, pvd);
+    } catch (err) {
+      errorHandler(err, setSnackbar);
+    }
   }
 
   const sendRequestCompleted = (status: number) => {
@@ -471,7 +477,7 @@ const Certify = (props: {
                 <Typography sx={{
                   fontSize: 16,
                   textAlign: 'center'
-                }}>Your video has been attested with your credentials and click <Link href={`https://mumbai.polygonscan.com/tx/${txHash}`} underline="hover">here</Link> to view your verified credentials</Typography>
+                }}>Your video has been attested with your credentials and click <Link href={`https://mumbai.polygonscan.com/tx/${txHash}`} target={'_blank'} underline="hover">here</Link> to view your verified credentials</Typography>
                 <Button variant="contained" onClick={() => setStep('fill_id')} sx={{
                   height: 40,
                   width: 180

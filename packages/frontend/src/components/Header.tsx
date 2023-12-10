@@ -22,7 +22,7 @@ const Header = (props: {
       <Box sx={{
         alignItems: 'center',
         display: 'flex',
-        height: 100,
+        height: { xs: 60, md: 100 },
         justifyContent: 'space-between',
         left: 0,
         padding: { xs: '0 16px', sm: '0 32px', md: '0 50px' },
@@ -38,7 +38,9 @@ const Header = (props: {
           overflow: 'hidden',
           width: 90
         }}>
-          <img src="/logo.png" alt="" width={140} />
+          <Box component={'img'} src="/logo.png" alt="" sx={{
+            width: { xs: 80, md: 140 }
+          }} />
         </Box>
         {location.pathname.indexOf('certify') !== -1 ?
           <>
@@ -67,7 +69,8 @@ const Header = (props: {
         <DialogContent>
           <Box sx={{
             alignItems: 'center',
-            display: 'flex'
+            display: 'flex',
+            marginBottom: 1
           }}>
             <Typography sx={{
               color: '#929292',
@@ -100,7 +103,8 @@ const Header = (props: {
           </Box>
           <Box sx={{
             alignItems: 'center',
-            display: 'flex'
+            display: 'flex',
+            marginBottom: 1
           }}>
             <Typography sx={{
               color: '#929292',

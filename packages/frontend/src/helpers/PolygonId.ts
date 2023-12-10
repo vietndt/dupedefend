@@ -8,7 +8,7 @@ import {
 export const initInMemoryDataStorage = () => {
   let conf: EthConnectionConfig = defaultEthConnectionConfig;
   conf.contractAddress = '0x134B1BE34911E39A8397ec6289782989729807a4';
-  conf.url = 'https://polygon-mumbai.g.alchemy.com/v2/skcObGFfdsDGaGOWAmN7O1aNKyJkjXW1';
+  conf.url = `https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_API_KEY}`;
 
   var dataStorage = {
     credential: new CredentialStorage(new InMemoryDataSource<W3CCredential>()),

@@ -77,8 +77,8 @@ const Header = (props: {
               fontSize: 14,
               fontWeight: 800,
               textDecoration: 'none',
-              width: 80
-            }}>Wallet:</Typography>
+              width: 200
+            }}>Web3Auth address:</Typography>
             <Typography sx={{
               color: '#000000',
               fontSize: 14,
@@ -111,7 +111,41 @@ const Header = (props: {
               fontSize: 14,
               fontWeight: 800,
               textDecoration: 'none',
-              width: 80
+              width: 200
+            }}>Credential address:</Typography>
+            <Typography sx={{
+              color: '#000000',
+              fontSize: 14,
+              fontWeight: 800,
+              textDecoration: 'none',
+              width: '100%',
+              wordBreak: 'break-all'
+            }}>{props.userInfo?.AAAddress}</Typography>
+            <IconButton
+              onClick={() => {
+                window.navigator.clipboard.writeText(props.userInfo?.AAAddress);
+                setSnackbar({
+                  isOpen: true,
+                  timeOut: 5000,
+                  type: 'success',
+                  message: 'Copied to clipboard'
+                });
+              }}
+            >
+              <ContentCopyIcon />
+            </IconButton>
+          </Box>
+          <Box sx={{
+            alignItems: 'center',
+            display: 'flex',
+            marginBottom: 1
+          }}>
+            <Typography sx={{
+              color: '#929292',
+              fontSize: 14,
+              fontWeight: 800,
+              textDecoration: 'none',
+              width: 200
             }}>User Id:</Typography>
             <Typography sx={{
               color: '#000000',
@@ -144,7 +178,7 @@ const Header = (props: {
               fontSize: 14,
               fontWeight: 800,
               textDecoration: 'none',
-              width: 80
+              width: 200
             }}>DID:</Typography>
             <Typography sx={{
               color: '#000000',

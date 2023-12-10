@@ -35,12 +35,12 @@ const CertifyHistory = (props: {
   const getContractEvents = async () => {
     setLoading(true);
     try {
-      const provider = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_ID}`);
+      const provider = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_API_KEY}`);
       const abi = getABI('IssuerSimple');
-      const contract = new ethers.Contract('0x454e5108cee33c743d8de8ef92aeb749256abc3d', abi, provider);
+      const contract = new ethers.Contract(process.env.REACT_APP_ISSUER_SIMPLE_CONTRACT as string, abi, provider);
       const txs = await contract.queryFilter({ topics: ['0x71bf0dbcca3a81d6ac3e071134aded0f8e9c7a855bd4ef79e20184ac4471fc56'] }, 0, 'latest');
       txs.sort((a, b) => a.blockNumber < b.blockNumber ? 1 : -1);
-      const txsFiltered = txs.filter(tx => (tx.args?.requestor)?.toLowerCase() === (props.userInfo?.address).toLowerCase())
+      const txsFiltered = txs.filter(tx => (tx.args?.requestor)?.toLowerCase() === (props.userInfo?.AAAddress).toLowerCase())
       const historyItems: Array<{
         requestor: string;
         videoOrChannelId: string;

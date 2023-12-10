@@ -94,9 +94,9 @@ const Verify = () => {
     }
     try {
       setStep('verifying');
-      const provider = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_ID}`);
+      const provider = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_API_KEY}`);
       const abi = getABI('IssuerSimple');
-      const contract = new ethers.Contract('0x454e5108cee33c743d8de8ef92aeb749256abc3d', abi, provider);
+      const contract = new ethers.Contract(process.env.REACT_APP_ISSUER_SIMPLE_CONTRACT as string, abi, provider);
       const response = await contract.getUserClaim(
         userIdControl,
         videoOrChannelId

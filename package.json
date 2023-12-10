@@ -2,10 +2,5 @@
   "name": "dupedefend",
   "version": "0.1.0",
   "repository": "https://github.com/vietndt/dupedefend.git",
-  "license": "MIT",
-  "private": true,
-  "scripts": {
-  },
-  "dependencies": {
-  }
+  "license": "MIT"
 }

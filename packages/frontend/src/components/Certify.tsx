@@ -15,7 +15,10 @@ import { WALLET_ADAPTERS } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { DID } from '@iden3/js-iden3-core';
 import { ethers } from "ethers";
-import { TransactionResponse } from "@ethersproject/providers";
+import { LightSmartContractAccount, getDefaultLightAccountFactoryAddress } from "@alchemy/aa-accounts";
+import { AlchemyProvider } from "@alchemy/aa-alchemy";
+import { LocalAccountSigner } from "@alchemy/aa-core";
+import { polygonMumbai } from "viem/chains";
 
 import RPC from "../helpers/EthereumRPC";
 import { identityCreation } from "../helpers/PolygonId";
@@ -30,6 +33,7 @@ const Certify = (props: {
   setLoggedIn: Function,
   setUserInfo: Function
 }) => {
+  const chain: any = polygonMumbai;
   const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null);
   const [provider, setProvider] = useState<any>();
   const [videoInputControl, setVideoInputControl] = useState<string>('');
@@ -103,13 +107,28 @@ const Certify = (props: {
     if (status === 'connected') {
       setStep('fill_id');
       const getUserInfo = async () => {
-        const rpc = new RPC(provider);
-        const address = await rpc.getAddress();
+        let rpc = new RPC(provider);
+        let address = await rpc.getAddress();
         const privateKey = await rpc.getPrivateKey();
         const res = await identityCreation(privateKey);
         const userId = await DID.idFromDID(res.did);
+        const owner = LocalAccountSigner.privateKeyToAccountSigner(`0x${privateKey}`);
+        const AAprovider = new AlchemyProvider({
+          apiKey: process.env.REACT_APP_ALCHEMY_API_KEY as string,
+          chain,
+        }).connect(
+          (rpcClient) =>
+            new LightSmartContractAccount({
+              rpcClient,
+              owner,
+              chain,
+              factoryAddress: getDefaultLightAccountFactoryAddress(chain),
+            })
+        );
+        const AAAddress = await AAprovider.getAddress();
         props.setUserInfo({
           address,
+          AAAddress,
           did: res.did.string(),
           userId: userId.bigInt().toString()
         });
@@ -131,11 +150,24 @@ const Certify = (props: {
 
   const getDID = async () => {
     const rpc = new RPC(provider);
-    const address = await rpc.getAddress();
+    // const address = await rpc.getAddress();
     const privateKey = await rpc.getPrivateKey();
+    const owner = LocalAccountSigner.privateKeyToAccountSigner(`0x${privateKey}`);
+    const AAprovider = new AlchemyProvider({
+      apiKey: process.env.REACT_APP_ALCHEMY_API_KEY as string,
+      chain,
+    }).connect(
+      (rpcClient) =>
+        new LightSmartContractAccount({
+          rpcClient,
+          owner,
+          chain,
+          factoryAddress: getDefaultLightAccountFactoryAddress(chain),
+        })
+    );
+    const AAAddress = await AAprovider.getAddress();
     const res = await identityCreation(privateKey);
-
-    setDid(`My wallet: ${address}, My Polygon DID: ${res.did.string()}`)
+    setDid(`My wallet: ${AAAddress}, My Polygon DID: ${res.did.string()}`)
     setStep('copy_detail');
   }
 
@@ -204,11 +236,33 @@ const Certify = (props: {
     try {
       const rpc = new RPC(provider);
       const address = await rpc.getAddress();
-      const privateKey = await rpc.getPrivateKey();
+      const privateKey = await rpc.getPrivateKey(); // web3 private key
       const res = await identityCreation(privateKey);
+  
+      const owner = LocalAccountSigner.privateKeyToAccountSigner(`0x${privateKey}`);
+      // Create a provider to send user operations from your smart account
+      const AAprovider = new AlchemyProvider({
+        apiKey: process.env.REACT_APP_ALCHEMY_API_KEY as string,
+        chain,
+      }).connect(
+        (rpcClient) =>
+          new LightSmartContractAccount({
+            rpcClient,
+            owner,
+            chain,
+            factoryAddress: getDefaultLightAccountFactoryAddress(chain),
+          })
+      );
+  
+      AAprovider.withAlchemyGasManager({
+        policyId: process.env.REACT_APP_GAS_MANAGER_POLICY_ID as string,
+      });
+      //then set that as the provider for gasless transactions
+      setProvider(AAprovider);
       const userId = await DID.idFromDID(res.did);
-      const pvd = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_ID}`);
-      const wallet = new ethers.Wallet(privateKey, pvd);
+      const AAAddress = await AAprovider.getAddress();
+      const pvd = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_API_KEY}`);
+      // const wallet = new ethers.Wallet(privateKey, pvd);
       const abi = getABI('SocialMediaVerifier');
       const donHostedSecretsVersion = await fetch(process.env.REACT_APP_API_URL as string, {
         method: 'POST',
@@ -221,22 +275,37 @@ const Certify = (props: {
           type: 'video'
         })
       });
-      const contract = new ethers.Contract('0xE54C1690Ee523c827C97376d42cd35BeA01de226', abi, wallet);
-      const response: TransactionResponse = await contract.sendRequest(
-        youtubeFunctionString, // source
-        '0x', // encryptedSecretsUrls
-        0, // donHostedSecretsSlotID
-        donHostedSecretsVersion.json(), // donHostedSecretsVersion
-        userId.bigInt(), // userId
-        [videoOrChannelId, address, 'video'], // args
-        [], // bytesArgs
-        '846', // subscriptionId
-        300000, // gasLimit
-        '0x66756e2d706f6c79676f6e2d6d756d6261692d31000000000000000000000000', // donID
-      );
-      setTxHash(response.hash);
-      pollingTransaction(response.hash, sendRequestCompleted, pvd);
+      const resdonHostedSecretsVersion = await donHostedSecretsVersion.json();
+      let encodeFunctionDataParams = {
+        abi: abi,
+        args: [
+          youtubeFunctionString, // source
+          '0x', // encryptedSecretsUrls
+          0, // donHostedSecretsSlotID
+          resdonHostedSecretsVersion, // donHostedSecretsVersion
+          userId.bigInt(), // userId
+          [videoOrChannelId, AAAddress, 'video'], // args
+          [], // bytesArgs
+          '846', // subscriptionId
+          300000, // gasLimit
+          '0x66756e2d706f6c79676f6e2d6d756d6261692d31000000000000000000000000'
+        ],
+        functionName: "sendRequest"
+      };
+      const iface = new ethers.utils.Interface(abi);
+  
+      const uoCallData = iface.encodeFunctionData("sendRequest", encodeFunctionDataParams.args);
+  
+      const uo = await AAprovider.sendUserOperation({
+        target: process.env.REACT_APP_SOCIAL_MEDIA_VERIFIER_CONTRACT as any,
+        data: `0x${uoCallData.slice(2)}`,
+      });
+  
+      const txHash = await AAprovider.waitForUserOperationTransaction(uo.hash);
+      setTxHash(txHash);
+      pollingTransaction(txHash, sendRequestCompleted, pvd);
     } catch (err) {
+      setStep('failed');
       errorHandler(err, setSnackbar);
     }
   }

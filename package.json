@@ -4,8 +4,11 @@
   "repository": "https://github.com/vietndt/dupedefend.git",
   "license": "MIT",
   "private": true,
-  "scripts": {
-  },
+  "scripts": {},
   "dependencies": {
+    "@alchemy/aa-accounts": "^1.2.0",
+    "@alchemy/aa-alchemy": "^1.2.0",
+    "@alchemy/aa-core": "^1.2.0",
+    "viem": "^1.19.11"
   }
 }

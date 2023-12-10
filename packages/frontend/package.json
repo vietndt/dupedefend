@@ -4,6 +4,9 @@
   "private": true,
   "dependencies": {
     "@0xpolygonid/js-sdk": "^1.4.2",
+    "@alchemy/aa-accounts": "^1.2.0",
+    "@alchemy/aa-alchemy": "^1.2.0",
+    "@alchemy/aa-core": "^1.2.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@iden3/js-crypto": "1.0.3",
@@ -31,6 +34,7 @@
     "react-router-dom": "^6.11.1",
     "react-scripts": "5.0.1",
     "typescript": "^4.4.2",
+    "viem": "^1.19.11",
     "web-vitals": "^2.1.0"
   },
   "devDependencies": {

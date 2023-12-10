@@ -26,6 +26,18 @@ import { pollingTransaction } from "../helpers/Utilities";
 import SnackbarMessage from "./Snackbar";
 import { ISnackbarConfig } from "../models/Snackbar";
 
+//AA change
+import {
+  LightSmartContractAccount,
+  getDefaultLightAccountFactoryAddress,
+} from "@alchemy/aa-accounts";
+import { AlchemyProvider } from "@alchemy/aa-alchemy";
+import { LocalAccountSigner, type Hex } from "@alchemy/aa-core";
+import { polygonMumbai } from "viem/chains";
+
+const chain = polygonMumbai;
+//AA change part 1
+
 const Certify = (props: {
   setLoggedIn: Function,
   setUserInfo: Function
@@ -103,9 +115,33 @@ const Certify = (props: {
     if (status === 'connected') {
       setStep('fill_id');
       const getUserInfo = async () => {
-        const rpc = new RPC(provider);
-        const address = await rpc.getAddress();
+        let rpc = new RPC(provider);
+        let address = await rpc.getAddress();
         const privateKey = await rpc.getPrivateKey();
+        //create the Alchemy Light Account and get the DID AA Change
+        const owner = LocalAccountSigner.privateKeyToAccountSigner(privateKey);
+        const GAS_MANAGER_POLICY_ID = "YourGasManagerPolicyId";
+        // Create a provider to send user operations from your smart account
+        const AAprovider = new AlchemyProvider({
+          // get your Alchemy API key at https://dashboard.alchemy.com
+          apiKey: "qBnsyAvjpsxGAL0J_EeUtT9ilVVuNlc2",
+          chain,
+        }).connect(
+          (rpcClient) =>
+            new LightSmartContractAccount({
+              rpcClient,
+              owner,
+              chain,
+              factoryAddress: getDefaultLightAccountFactoryAddress(chain),
+            })
+        );
+        
+        AAprovider.withAlchemyGasManager({
+          policyId: "ecbc31b5-d18a-4359-bc7b-a21fdb6b4e20",
+        });
+        //then set that as the provider for gasless transactions
+        setProvider(AAprovider);
+
         const res = await identityCreation(privateKey);
         const userId = await DID.idFromDID(res.did);
         props.setUserInfo({

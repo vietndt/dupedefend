@@ -17,14 +17,13 @@ This was done for the constellation chainlink hackathon
 
 
 ### Changelog
-- [x] Created a basic UI to get youtube metadata
-- [x] Add a sample template from polygon id (this was renamed to backend - curl https://iden3-circuits-bucket.s3.eu-west-1.amazonaws.com/latest.zip --output latest.zip)
-- [x] Tweak polygon sample project to emit VC's
-- [x] Working end to end flow with functions and Polygon ID
-- [ ] Tweak sample to emit VC's using AA
+- [x] Add chainlink function to get youtube metadata and check if user's DID and wallet address exists in video
+- [x] Added polygon's onchain issuer addresses - 0x454E5108cEE33c743D8DE8eF92aeb749256AbC3D
+- [x] Added web3auth for easy onboarding for content creators as subject audience
+- [x] Added chainlink function caller - 0xdc99eE47fc88C11Cdff1291628d1c0b5D6292706 
+- [x] Added UI to show verification and past verifications
+- [x] Added Account Abstraction using Alchemy's Light account and reconfigured the hierarchy of accounts as web3auth-> LightAccount -> DID
 
-### Issues to resolve
-AA issue with Biconomy need to resolve
 
 ### Example Transaction with Claim for polygon that was fulfilled via a chainlink state change
 https://mumbai.polygonscan.com/tx/0x7ed386efe1d6a3e27e1fdc7982b40d05018f13d7aa915fb3716f73aa5861c6b3#eventlog

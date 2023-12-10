@@ -155,6 +155,7 @@ const Certify = (props: {
       const check = await checkVideo(id);
       if (check) {
         setVideoPreviewUrl(`https://www.youtube.com/embed/${id}`);
+        setVideoOrChannelId(id);
         setInvalidVideo(false);
       } else {
         setInvalidVideo(true);

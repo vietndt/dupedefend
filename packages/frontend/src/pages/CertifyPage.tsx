@@ -21,13 +21,7 @@ const CertifyPage = (props: {
       width: '100%'
     }}>
       <Certify setLoggedIn={props.setLoggedIn} setUserInfo={props.setUserInfo} />
-      <Box sx={{
-        display: 'flex',
-        overflow: 'auto',
-        width: '100%'
-      }}>
-        <CertifyHistory loggedIn={props.loggedIn} userInfo={props.userInfo} />
-      </Box>
+      <CertifyHistory loggedIn={props.loggedIn} userInfo={props.userInfo} />
     </Box>
   )
 }

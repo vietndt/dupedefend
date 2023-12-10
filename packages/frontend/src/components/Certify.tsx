@@ -34,6 +34,7 @@ import {
 import { AlchemyProvider } from "@alchemy/aa-alchemy";
 import { LocalAccountSigner, type Hex } from "@alchemy/aa-core";
 import { polygonMumbai } from "viem/chains";
+import { encodeFunctionData } from "viem";
 
 const chain = polygonMumbai;
 //AA change part 1
@@ -118,29 +119,7 @@ const Certify = (props: {
         let rpc = new RPC(provider);
         let address = await rpc.getAddress();
         const privateKey = await rpc.getPrivateKey();
-        //create the Alchemy Light Account and get the DID AA Change
-        const owner = LocalAccountSigner.privateKeyToAccountSigner(privateKey);
-        const GAS_MANAGER_POLICY_ID = "YourGasManagerPolicyId";
-        // Create a provider to send user operations from your smart account
-        const AAprovider = new AlchemyProvider({
-          // get your Alchemy API key at https://dashboard.alchemy.com
-          apiKey: "qBnsyAvjpsxGAL0J_EeUtT9ilVVuNlc2",
-          chain,
-        }).connect(
-          (rpcClient) =>
-            new LightSmartContractAccount({
-              rpcClient,
-              owner,
-              chain,
-              factoryAddress: getDefaultLightAccountFactoryAddress(chain),
-            })
-        );
-        
-        AAprovider.withAlchemyGasManager({
-          policyId: "ecbc31b5-d18a-4359-bc7b-a21fdb6b4e20",
-        });
-        //then set that as the provider for gasless transactions
-        setProvider(AAprovider);
+       
 
         const res = await identityCreation(privateKey);
         const userId = await DID.idFromDID(res.did);
@@ -167,11 +146,14 @@ const Certify = (props: {
 
   const getDID = async () => {
     const rpc = new RPC(provider);
-    const address = await rpc.getAddress();
+    // const address = await rpc.getAddress();
     const privateKey = await rpc.getPrivateKey();
+     //create the Alchemy Light Account and get the DID AA Change
+     const owner = LocalAccountSigner.privateKeyToAccountSigner(`0x${privateKey}`);
+     const AAAddress = await owner.getAddress();
     const res = await identityCreation(privateKey);
 
-    setDid(`My wallet: ${address}, My Polygon DID: ${res.did.string()}`)
+    setDid(`My wallet: ${AAAddress}, My Polygon DID: ${res.did.string()}`)
     setStep('copy_detail');
   }
 
@@ -237,12 +219,37 @@ const Certify = (props: {
   const sendRequest = async () => {
     const rpc = new RPC(provider);
     const address = await rpc.getAddress();
-    const privateKey = await rpc.getPrivateKey();
+    const privateKey = await rpc.getPrivateKey(); // web3 private key
     const res = await identityCreation(privateKey);
+
+     //create the Alchemy Light Account and get the DID AA Change
+     const owner = LocalAccountSigner.privateKeyToAccountSigner(`0x${privateKey}`);
+     const GAS_MANAGER_POLICY_ID = "ecbc31b5-d18a-4359-bc7b-a21fdb6b4e20";
+     // Create a provider to send user operations from your smart account
+     const AAprovider = new AlchemyProvider({
+       // get your Alchemy API key at https://dashboard.alchemy.com
+       apiKey: "qBnsyAvjpsxGAL0J_EeUtT9ilVVuNlc2",
+       chain,
+     }).connect(
+       (rpcClient) =>
+         new LightSmartContractAccount({
+           rpcClient,
+           owner,
+           chain,
+           factoryAddress: getDefaultLightAccountFactoryAddress(chain),
+         })
+     );
+     
+     AAprovider.withAlchemyGasManager({
+       policyId: GAS_MANAGER_POLICY_ID,
+     });
+     //then set that as the provider for gasless transactions
+     setProvider(AAprovider);
     const userId = await DID.idFromDID(res.did);
-    const pvd = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_ID}`);
-    const wallet = new ethers.Wallet(privateKey, pvd);
+    // const pvd = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_ID}`);
+    // const wallet = new ethers.Wallet(privateKey, pvd);
     const abi = getABI('SocialMediaVerifier');
+
     const donHostedSecretsVersion = await fetch(process.env.REACT_APP_API_URL as string, {
       method: 'POST',
       headers: {
@@ -254,21 +261,48 @@ const Certify = (props: {
         type: 'video'
       })
     });
-    const contract = new ethers.Contract('0xE54C1690Ee523c827C97376d42cd35BeA01de226', abi, wallet);
-    const response: TransactionResponse = await contract.sendRequest(
+    const resdonHostedSecretsVersion = await donHostedSecretsVersion.json();
+    const uoCallData = encodeFunctionData({
+      abi: abi,
+      
+      args: [
       youtubeFunctionString, // source
       '0x', // encryptedSecretsUrls
       0, // donHostedSecretsSlotID
-      donHostedSecretsVersion.json(), // donHostedSecretsVersion
+      resdonHostedSecretsVersion, // donHostedSecretsVersion
       userId.bigInt(), // userId
       [videoOrChannelId, address, 'video'], // args
       [], // bytesArgs
       '846', // subscriptionId
       300000, // gasLimit
-      '0x66756e2d706f6c79676f6e2d6d756d6261692d31000000000000000000000000', // donID
-    );
-    setTxHash(response.hash);
-    pollingTransaction(response.hash, sendRequestCompleted, pvd);
+      '0x66756e2d706f6c79676f6e2d6d756d6261692d31000000000000000000000000'
+    ],
+    functionName: "sendRequest"
+    });
+    
+    const uo = await AAprovider.sendUserOperation({
+      target: "0xE54C1690Ee523c827C97376d42cd35BeA01de226",
+      data: uoCallData,
+    });
+
+    const txHash = await AAprovider.waitForUserOperationTransaction(uo.hash);
+    console.log("txHash", txHash);
+    // const contract = new ethers.Contract('0xE54C1690Ee523c827C97376d42cd35BeA01de226', abi, AAprovider);
+    // const response: TransactionResponse = await contract.sendRequest(
+    //   youtubeFunctionString, // source
+    //   '0x', // encryptedSecretsUrls
+    //   0, // donHostedSecretsSlotID
+    //   donHostedSecretsVersion.json(), // donHostedSecretsVersion
+    //   userId.bigInt(), // userId
+    //   [videoOrChannelId, address, 'video'], // args
+    //   [], // bytesArgs
+    //   '846', // subscriptionId
+    //   300000, // gasLimit
+    //   '0x66756e2d706f6c79676f6e2d6d756d6261692d31000000000000000000000000', // donID
+    // );
+    // setTxHash(response.hash);
+    setTxHash(txHash);
+    pollingTransaction(txHash, sendRequestCompleted, AAprovider);
   }
 
   const sendRequestCompleted = (status: number) => {

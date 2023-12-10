@@ -110,7 +110,8 @@ contract SocialMediaVerifier is FunctionsClient, ConfirmedOwner {
         bytes memory response,
         bytes memory err
     ) internal override {
-
+        //decode
+        //say if not true then throw exception
         // if (requestToUserArgs[requestId] != requestor) {
         //     revert UnexpectedRequestOr(requestor);
         // }

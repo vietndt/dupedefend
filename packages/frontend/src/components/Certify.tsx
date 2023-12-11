@@ -542,12 +542,12 @@ const Certify = (props: {
                 <Typography component="h3" sx={{
                   fontSize: 20,
                   fontWeight: 600
-                }}>Successfully</Typography>
+                }}>Submitted</Typography>
                 <Typography sx={{
                   fontSize: 16,
                   textAlign: 'center'
-                }}>Your video has been attested with your credentials and click <Link href={`https://mumbai.polygonscan.com/tx/${txHash}`} target={'_blank'} underline="hover">here</Link> to view your verified credentials</Typography>
-                <Button variant="contained" onClick={() => setStep('fill_id')} sx={{
+                }}>Your Video has been submitted for attestation if it is valid address it will be attested, click verify later to check if it has been verified</Typography>
+                <Button variant="contained" onClick={() => window.location.reload()} sx={{
                   height: 40,
                   width: 180
                 }}>OK</Button>
@@ -567,7 +567,7 @@ const Certify = (props: {
                   fontSize: 20,
                   fontWeight: 600
                 }}>Failed</Typography>
-                <Button variant="contained" onClick={() => setStep('fill_id')} sx={{
+                <Button variant="contained" onClick={() => window.location.reload()} sx={{
                   height: 40,
                   width: 180
                 }}>OK</Button>

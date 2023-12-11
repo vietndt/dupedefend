@@ -42,8 +42,8 @@ if (youtubeResponse.error) {
 }
 
 if (youtubeResponse.data && youtubeResponse.data.items && youtubeResponse.data.items[0]) {
-  const description = youtubeResponse.data.items[0].snippet.description;
-  const walletIndex = description.indexOf(ownerWalletAddress);
+  const description = youtubeResponse.data.items[0].snippet.description.toLowerCase();
+  const walletIndex = description.indexOf(ownerWalletAddress.toLowerCase());
   const resultInt = walletIndex !== -1 ? 1 : 0;
   return Functions.encodeUint256(resultInt);
 } else {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   Box, FormControl, Button, Paper, Typography, CircularProgress, InputAdornment, IconButton, OutlinedInput, InputLabel,
-  Checkbox, FormControlLabel, Link
+  Checkbox, FormControlLabel
 } from "@mui/material";
 import GoogleIcon from '@mui/icons-material/Google';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -38,7 +38,6 @@ const Certify = (props: {
   const [provider, setProvider] = useState<any>();
   const [videoInputControl, setVideoInputControl] = useState<string>('');
   const [videoOrChannelId, setVideoOrChannelId] = useState<string>('');
-  const [txHash, setTxHash] = useState<string>('');
   const [status, setStatus] = useState<ADAPTER_STATUS_TYPE>();
   const [step, setStep] = useState<'fill_id' | 'creating_identify' | 'copy_detail' | 'send_request' | 'completing' | 'completed' | 'failed'>();
   const [did, setDid] = useState<string>('');
@@ -150,7 +149,6 @@ const Certify = (props: {
 
   const getDID = async () => {
     const rpc = new RPC(provider);
-    // const address = await rpc.getAddress();
     const privateKey = await rpc.getPrivateKey();
     const owner = LocalAccountSigner.privateKeyToAccountSigner(`0x${privateKey}`);
     const AAprovider = new AlchemyProvider({
@@ -236,9 +234,9 @@ const Certify = (props: {
     try {
       const rpc = new RPC(provider);
       const address = await rpc.getAddress();
-      const privateKey = await rpc.getPrivateKey(); // web3 private key
+      const privateKey = await rpc.getPrivateKey();
       const res = await identityCreation(privateKey);
-  
+
       const owner = LocalAccountSigner.privateKeyToAccountSigner(`0x${privateKey}`);
       // Create a provider to send user operations from your smart account
       const AAprovider = new AlchemyProvider({
@@ -253,16 +251,15 @@ const Certify = (props: {
             factoryAddress: getDefaultLightAccountFactoryAddress(chain),
           })
       );
-  
+
       AAprovider.withAlchemyGasManager({
         policyId: process.env.REACT_APP_GAS_MANAGER_POLICY_ID as string,
       });
       //then set that as the provider for gasless transactions
       setProvider(AAprovider);
-      const userId = await DID.idFromDID(res.did);
+      const userId = DID.idFromDID(res.did);
       const AAAddress = await AAprovider.getAddress();
-      const pvd = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_API_KEY}`);
-      // const wallet = new ethers.Wallet(privateKey, pvd);
+      const rpcProvider = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_API_KEY}`);
       const abi = getABI('SocialMediaVerifier');
       const donHostedSecretsVersion = await fetch(process.env.REACT_APP_API_URL as string, {
         method: 'POST',
@@ -293,17 +290,16 @@ const Certify = (props: {
         functionName: "sendRequest"
       };
       const iface = new ethers.utils.Interface(abi);
-  
+
       const uoCallData = iface.encodeFunctionData("sendRequest", encodeFunctionDataParams.args);
-  
+
       const uo = await AAprovider.sendUserOperation({
         target: process.env.REACT_APP_SOCIAL_MEDIA_VERIFIER_CONTRACT as any,
         data: `0x${uoCallData.slice(2)}`,
       });
-  
+
       const txHash = await AAprovider.waitForUserOperationTransaction(uo.hash);
-      setTxHash(txHash);
-      pollingTransaction(txHash, sendRequestCompleted, pvd);
+      pollingTransaction(txHash, sendRequestCompleted, rpcProvider);
     } catch (err) {
       setStep('failed');
       errorHandler(err, setSnackbar);
@@ -340,7 +336,7 @@ const Certify = (props: {
             <Typography component="h3" sx={{
               fontSize: 16,
               textAlign: 'center'
-            }}>Please login with your Google accout to continue</Typography>
+            }}>Please login with your Google account to continue</Typography>
             <Button variant="outlined" startIcon={<GoogleIcon />} disabled={status !== 'ready'} onClick={login} sx={{
               fontSize: 16,
               height: 50

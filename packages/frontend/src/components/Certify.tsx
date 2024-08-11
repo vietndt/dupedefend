@@ -230,8 +230,8 @@ const Certify = (props: {
         userId.bigInt(), // userId
         [videoOrChannelId, address, 'video'], // args
         [], // bytesArgs
-        '366', // subscriptionId
-        300000, // gasLimit
+        '336', // subscriptionId
+        400000, // gasLimit
         '0x66756e2d706f6c79676f6e2d616d6f792d310000000000000000000000000000', // donID
       );
       setTxHash(response.hash);

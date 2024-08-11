@@ -221,7 +221,7 @@ const Certify = (props: {
           type: 'video'
         })
       });
-      const contract = new ethers.Contract('0xE54C1690Ee523c827C97376d42cd35BeA01de226', abi, wallet);
+      const contract = new ethers.Contract('0x6f7a9b9EAb67474F52EC9A919b72d0142B49e835', abi, wallet);
       const response: TransactionResponse = await contract.sendRequest(
         youtubeFunctionString, // source
         '0x', // encryptedSecretsUrls
@@ -230,9 +230,9 @@ const Certify = (props: {
         userId.bigInt(), // userId
         [videoOrChannelId, address, 'video'], // args
         [], // bytesArgs
-        '846', // subscriptionId
+        '366', // subscriptionId
         300000, // gasLimit
-        '0x66756e2d706f6c79676f6e2d6d756d6261692d31000000000000000000000000', // donID
+        '0x66756e2d706f6c79676f6e2d616d6f792d310000000000000000000000000000', // donID
       );
       setTxHash(response.hash);
       pollingTransaction(response.hash, sendRequestCompleted, pvd);

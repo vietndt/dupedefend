@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   Box, FormControl, Button, Paper, Typography, CircularProgress, InputAdornment, IconButton, OutlinedInput, InputLabel,
-  Checkbox, FormControlLabel
+  Checkbox, FormControlLabel, Link
 } from "@mui/material";
 import GoogleIcon from '@mui/icons-material/Google';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -15,10 +15,7 @@ import { WALLET_ADAPTERS } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { DID } from '@iden3/js-iden3-core';
 import { ethers } from "ethers";
-import { LightSmartContractAccount, getDefaultLightAccountFactoryAddress } from "@alchemy/aa-accounts";
-import { AlchemyProvider } from "@alchemy/aa-alchemy";
-import { LocalAccountSigner } from "@alchemy/aa-core";
-import { polygonMumbai } from "viem/chains";
+import { TransactionResponse } from "@ethersproject/providers";
 
 import RPC from "../helpers/EthereumRPC";
 import { identityCreation } from "../helpers/PolygonId";
@@ -33,11 +30,11 @@ const Certify = (props: {
   setLoggedIn: Function,
   setUserInfo: Function
 }) => {
-  const chain: any = polygonMumbai;
   const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null);
   const [provider, setProvider] = useState<any>();
   const [videoInputControl, setVideoInputControl] = useState<string>('');
   const [videoOrChannelId, setVideoOrChannelId] = useState<string>('');
+  const [txHash, setTxHash] = useState<string>('');
   const [status, setStatus] = useState<ADAPTER_STATUS_TYPE>();
   const [step, setStep] = useState<'fill_id' | 'creating_identify' | 'copy_detail' | 'send_request' | 'completing' | 'completed' | 'failed'>();
   const [did, setDid] = useState<string>('');
@@ -53,10 +50,10 @@ const Certify = (props: {
       config: {
         chainConfig: {
           chainNamespace: "eip155",
-          chainId: "0x13881",
-          rpcTarget: "https://rpc.ankr.com/polygon_mumbai",
-          displayName: "Polygon Mumbai",
-          blockExplorer: "https://mumbai.polygonscan.com",
+          chainId: "0x13882",
+          rpcTarget: "https://polygon-amoy.g.alchemy.com/v2/qBnsyAvjpsxGAL0J_EeUtT9ilVVuNlc2",
+          displayName: "Polygon Amoy",
+          blockExplorer: "https://amoy.polygonscan.com",
           ticker: "MATIC",
           tickerName: "Polygon",
         } as any,
@@ -106,28 +103,13 @@ const Certify = (props: {
     if (status === 'connected') {
       setStep('fill_id');
       const getUserInfo = async () => {
-        let rpc = new RPC(provider);
-        let address = await rpc.getAddress();
+        const rpc = new RPC(provider);
+        const address = await rpc.getAddress();
         const privateKey = await rpc.getPrivateKey();
         const res = await identityCreation(privateKey);
         const userId = await DID.idFromDID(res.did);
-        const owner = LocalAccountSigner.privateKeyToAccountSigner(`0x${privateKey}`);
-        const AAprovider = new AlchemyProvider({
-          apiKey: process.env.REACT_APP_ALCHEMY_API_KEY as string,
-          chain,
-        }).connect(
-          (rpcClient) =>
-            new LightSmartContractAccount({
-              rpcClient,
-              owner,
-              chain,
-              factoryAddress: getDefaultLightAccountFactoryAddress(chain),
-            })
-        );
-        const AAAddress = await AAprovider.getAddress();
         props.setUserInfo({
           address,
-          AAAddress,
           did: res.did.string(),
           userId: userId.bigInt().toString()
         });
@@ -149,23 +131,11 @@ const Certify = (props: {
 
   const getDID = async () => {
     const rpc = new RPC(provider);
+    const address = await rpc.getAddress();
     const privateKey = await rpc.getPrivateKey();
-    const owner = LocalAccountSigner.privateKeyToAccountSigner(`0x${privateKey}`);
-    const AAprovider = new AlchemyProvider({
-      apiKey: process.env.REACT_APP_ALCHEMY_API_KEY as string,
-      chain,
-    }).connect(
-      (rpcClient) =>
-        new LightSmartContractAccount({
-          rpcClient,
-          owner,
-          chain,
-          factoryAddress: getDefaultLightAccountFactoryAddress(chain),
-        })
-    );
-    const AAAddress = await AAprovider.getAddress();
     const res = await identityCreation(privateKey);
-    setDid(`My wallet: ${AAAddress}, My Polygon DID: ${res.did.string()}`)
+
+    setDid(`My wallet: ${address}, My Polygon DID: ${res.did.string()}`)
     setStep('copy_detail');
   }
 
@@ -236,30 +206,9 @@ const Certify = (props: {
       const address = await rpc.getAddress();
       const privateKey = await rpc.getPrivateKey();
       const res = await identityCreation(privateKey);
-
-      const owner = LocalAccountSigner.privateKeyToAccountSigner(`0x${privateKey}`);
-      // Create a provider to send user operations from your smart account
-      const AAprovider = new AlchemyProvider({
-        apiKey: process.env.REACT_APP_ALCHEMY_API_KEY as string,
-        chain,
-      }).connect(
-        (rpcClient) =>
-          new LightSmartContractAccount({
-            rpcClient,
-            owner,
-            chain,
-            factoryAddress: getDefaultLightAccountFactoryAddress(chain),
-          })
-      );
-
-      AAprovider.withAlchemyGasManager({
-        policyId: process.env.REACT_APP_GAS_MANAGER_POLICY_ID as string,
-      });
-      //then set that as the provider for gasless transactions
-      setProvider(AAprovider);
-      const userId = DID.idFromDID(res.did);
-      const AAAddress = await AAprovider.getAddress();
-      const rpcProvider = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_API_KEY}`);
+      const userId = await DID.idFromDID(res.did);
+      const pvd = new ethers.providers.JsonRpcProvider(`https://polygon-amoy.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_ID}`);
+      const wallet = new ethers.Wallet(privateKey, pvd);
       const abi = getABI('SocialMediaVerifier');
       const donHostedSecretsVersion = await fetch(process.env.REACT_APP_API_URL as string, {
         method: 'POST',
@@ -272,36 +221,22 @@ const Certify = (props: {
           type: 'video'
         })
       });
-      const resdonHostedSecretsVersion = await donHostedSecretsVersion.json();
-      let encodeFunctionDataParams = {
-        abi: abi,
-        args: [
-          youtubeFunctionString, // source
-          '0x', // encryptedSecretsUrls
-          0, // donHostedSecretsSlotID
-          resdonHostedSecretsVersion, // donHostedSecretsVersion
-          userId.bigInt(), // userId
-          [videoOrChannelId, AAAddress, 'video'], // args
-          [], // bytesArgs
-          '846', // subscriptionId
-          300000, // gasLimit
-          '0x66756e2d706f6c79676f6e2d6d756d6261692d31000000000000000000000000'
-        ],
-        functionName: "sendRequest"
-      };
-      const iface = new ethers.utils.Interface(abi);
-
-      const uoCallData = iface.encodeFunctionData("sendRequest", encodeFunctionDataParams.args);
-
-      const uo = await AAprovider.sendUserOperation({
-        target: process.env.REACT_APP_SOCIAL_MEDIA_VERIFIER_CONTRACT as any,
-        data: `0x${uoCallData.slice(2)}`,
-      });
-
-      const txHash = await AAprovider.waitForUserOperationTransaction(uo.hash);
-      pollingTransaction(txHash, sendRequestCompleted, rpcProvider);
+      const contract = new ethers.Contract('0xE54C1690Ee523c827C97376d42cd35BeA01de226', abi, wallet);
+      const response: TransactionResponse = await contract.sendRequest(
+        youtubeFunctionString, // source
+        '0x', // encryptedSecretsUrls
+        0, // donHostedSecretsSlotID
+        donHostedSecretsVersion.json(), // donHostedSecretsVersion
+        userId.bigInt(), // userId
+        [videoOrChannelId, address, 'video'], // args
+        [], // bytesArgs
+        '846', // subscriptionId
+        300000, // gasLimit
+        '0x66756e2d706f6c79676f6e2d6d756d6261692d31000000000000000000000000', // donID
+      );
+      setTxHash(response.hash);
+      pollingTransaction(response.hash, sendRequestCompleted, pvd);
     } catch (err) {
-      setStep('failed');
       errorHandler(err, setSnackbar);
     }
   }
@@ -336,7 +271,7 @@ const Certify = (props: {
             <Typography component="h3" sx={{
               fontSize: 16,
               textAlign: 'center'
-            }}>Please login with your Google account to continue</Typography>
+            }}>Please login with your Google accout to continue</Typography>
             <Button variant="outlined" startIcon={<GoogleIcon />} disabled={status !== 'ready'} onClick={login} sx={{
               fontSize: 16,
               height: 50
@@ -538,12 +473,12 @@ const Certify = (props: {
                 <Typography component="h3" sx={{
                   fontSize: 20,
                   fontWeight: 600
-                }}>Submitted</Typography>
+                }}>Successfully</Typography>
                 <Typography sx={{
                   fontSize: 16,
                   textAlign: 'center'
-                }}>Your Video has been submitted for attestation if it is valid address it will be attested, click verify later to check if it has been verified</Typography>
-                <Button variant="contained" onClick={() => window.location.reload()} sx={{
+                }}>Your video has been attested with your credentials and click <Link href={`https://mumbai.polygonscan.com/tx/${txHash}`} target={'_blank'} underline="hover">here</Link> to view your verified credentials</Typography>
+                <Button variant="contained" onClick={() => setStep('fill_id')} sx={{
                   height: 40,
                   width: 180
                 }}>OK</Button>
@@ -563,7 +498,7 @@ const Certify = (props: {
                   fontSize: 20,
                   fontWeight: 600
                 }}>Failed</Typography>
-                <Button variant="contained" onClick={() => window.location.reload()} sx={{
+                <Button variant="contained" onClick={() => setStep('fill_id')} sx={{
                   height: 40,
                   width: 180
                 }}>OK</Button>

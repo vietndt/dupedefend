@@ -35,7 +35,7 @@ const CertifyHistory = (props: {
   const getContractEvents = async () => {
     setLoading(true);
     try {
-      const provider = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_API_KEY}`);
+      const provider = new ethers.providers.JsonRpcProvider(`https://polygon-amoy.g.alchemy.com/v2/qBnsyAvjpsxGAL0J_EeUtT9ilVVuNlc2`);
       const abi = getABI('IssuerSimple');
       const contract = new ethers.Contract(process.env.REACT_APP_ISSUER_SIMPLE_CONTRACT as string, abi, provider);
       const txs = await contract.queryFilter({ topics: ['0x71bf0dbcca3a81d6ac3e071134aded0f8e9c7a855bd4ef79e20184ac4471fc56'] }, 0, 'latest');

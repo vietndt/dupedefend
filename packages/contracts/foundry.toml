@@ -8,8 +8,8 @@
   fuzz = { runs = 1_000 }
   gas_reports = ["*"]
   libs = ["lib"]
-  optimizer = true
-  optimizer_runs = 10_000
+  optimizer = false
+  optimizer_runs = 5_000
   out = "out"
   script = "script"
   src = "src"
@@ -23,7 +23,7 @@
 [profile.functions]
   solc_version = '0.8.19'
   src = 'lib/chainlink/contracts/src/v0.8/functions/'
-  gas_price = 3000000000
+  gas_price = 4000000000
   out = 'out'
 
 [profile.identity]
@@ -36,7 +36,7 @@
   verbosity = 4
 
 [etherscan]
-  mumbai = { key = "${API_KEY_POLYGONSCAN}" }
+  amoy = { key = "${API_KEY_POLYGONSCAN}" }
 
 [fmt]
   bracket_spacing = true
@@ -49,4 +49,4 @@
   wrap_comments = true
 
 [rpc_endpoints]
-  mumbai = "https://polygon-mumbai.g.alchemy.com/v2/${API_KEY_ALCHEMY}"
+  amoy = "https://polygon-amoy.g.alchemy.com/v2/${API_KEY_ALCHEMY}"

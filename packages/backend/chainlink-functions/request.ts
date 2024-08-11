@@ -12,8 +12,8 @@ const subscriptionId = 846; // REPLACE this with your subscription ID
 // hardcoded for Polygon Mumbai
 const makeRequest = async (videoOrChannelId: string, ownerWalletAddress: string, type: string): Promise<any> => {
   return new Promise(async (resolve, rej) => {
-    // hardcoded for Polygon Mumbai
-    const routerAddress = "0x6E2dc0F9DB014aE19888F539E59285D2Ea04244C";
+    // hardcoded for Polygon Amoy
+    const routerAddress = "0xC22a79eBA640940ABB6dF0f7982cc119578E11De";
     const linkTokenAddress = "0x326C977E6efc84E512bB9C30f76E30c160eD06FB";
     const donId = "fun-polygon-mumbai-1";
     const explorerUrl = "https://mumbai.polygonscan.com";

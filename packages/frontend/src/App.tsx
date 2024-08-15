@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Container } from "@mui/material";
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import HomePage from "./pages/HomPage";
 import Header from "./components/Header";
@@ -13,7 +13,7 @@ function App() {
   const [userInfo, setUserInfo] = useState<any>();
 
   return (
-    <HashRouter>
+    <BrowserRouter>
       <Container sx={{
         alignItems: 'center',
         display: 'flex',
@@ -36,7 +36,7 @@ function App() {
         </Routes>
         <Footer />
       </Container>
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 

@@ -7,9 +7,9 @@ import { ClaimBuilder } from "@iden3/contracts/lib/ClaimBuilder.sol";
 import { IdentityLib } from "@iden3/contracts/lib/IdentityLib.sol";
 import { IdentityBase } from "@iden3/contracts/lib/IdentityBase.sol";
 import { PrimitiveTypeUtils } from "@iden3/contracts/lib/PrimitiveTypeUtils.sol";
-import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {Ownable2StepUpgradeable} from '@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol';
 
-contract IssuerSimple is IdentityBase, OwnableUpgradeable {
+contract IssuerSimple is IdentityBase, Ownable2StepUpgradeable {
     using IdentityLib for IdentityLib.Data;
     uint256[500] private __gap;
     // represent the current credential type

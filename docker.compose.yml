@@ -1,0 +1,21 @@
+version: "3.5"
+services:
+
+  dupedefend-frontend:
+    build:
+      context: ./packages/frontend
+      dockerfile: Dockerfile
+    container_name: dupedefend-frontend
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+    networks:
+      - dupedefend-network
+    restart: always
+
+networks:
+  dupedefend-network:
+    driver: bridge
+    name: dupedefend-network

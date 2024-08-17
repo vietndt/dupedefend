@@ -11,8 +11,8 @@ contract Deploy is Script  {
         vm.startBroadcast(broadcaster);
 
         // IssuerSimple issuer = new IssuerSimple();
-        // issuer.initialize(0x134B1BE34911E39A8397ec6289782989729807a4);
-        SocialMediaVerifier verifier = new SocialMediaVerifier(0x6E2dc0F9DB014aE19888F539E59285D2Ea04244C);
+        // issuer.initialize(0x1a4cC30f2aA0377b0c3bc9848766D90cb4404124);
+        SocialMediaVerifier verifier = new SocialMediaVerifier(0xC22a79eBA640940ABB6dF0f7982cc119578E11De);
         // verifier.setIssuer(issuer);
         verifier.setIssuerSimpleAddress(0x454E5108cEE33c743D8DE8eF92aeb749256AbC3D);
         //add verifier into the chainlink subscription

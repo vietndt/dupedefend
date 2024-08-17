@@ -6,17 +6,18 @@ envvar.config();
 import functionsConsumerAbi from './abi/functionsClient.json';
 import { youtubeFunctionString } from './functions/youtube';
 
-const consumerAddress = "0xE54C1690Ee523c827C97376d42cd35BeA01de226";
-const subscriptionId = 846; // REPLACE this with your subscription ID
+
+const consumerAddress = "0x6f7a9b9EAb67474F52EC9A919b72d0142B49e835";
+const subscriptionId = 366; // REPLACE this with your subscription ID
 
 // hardcoded for Polygon Mumbai
 const makeRequest = async (videoOrChannelId: string, ownerWalletAddress: string, type: string): Promise<any> => {
   return new Promise(async (resolve, rej) => {
     // hardcoded for Polygon Mumbai
-    const routerAddress = "0x6E2dc0F9DB014aE19888F539E59285D2Ea04244C";
-    const linkTokenAddress = "0x326C977E6efc84E512bB9C30f76E30c160eD06FB";
-    const donId = "fun-polygon-mumbai-1";
-    const explorerUrl = "https://mumbai.polygonscan.com";
+    const routerAddress = "0xC22a79eBA640940ABB6dF0f7982cc119578E11De";
+    const linkTokenAddress = "0x0fd9e8d3af1aaee056eb9e802c3a762a667b1904";
+    const donId = "fun-polygon-amoy-1";
+    const explorerUrl = "https://amoy.polygonscan.com";
     const gatewayUrls = [
       "https://01.functions-gateway.testnet.chain.link/",
       "https://02.functions-gateway.testnet.chain.link/",

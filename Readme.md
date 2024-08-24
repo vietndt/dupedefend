@@ -1,4 +1,4 @@
-## Introduction
+## Introduction [!We are progressively moving to AMOY testnet!]
 
 <div style="text-align:center;">
     <img src="./FlowDefend.png" alt="Alt Text" width="95%">
